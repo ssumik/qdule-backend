@@ -1,4 +1,4 @@
-package dev.qdule;
+package dev.qdule.presentation;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
