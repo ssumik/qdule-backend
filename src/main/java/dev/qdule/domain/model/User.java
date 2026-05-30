@@ -1,8 +1,13 @@
 package dev.qdule.domain.model;
 
+import java.util.List;
+
 public class User {
     private Long id;
-    private String name;
+    public String name;
+    public String password;
+    public List<String> roles;
+    public UserStatus status;
 
     public User(Long id, String name) {
         this.id = id;

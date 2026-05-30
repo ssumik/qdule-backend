@@ -11,11 +11,11 @@ public class UserEntityMapper {
                 entity.getName());
     }
 
-    public static UserEntity toEntity(User service) {
+    public static UserEntity toEntity(User user) {
         UserEntity entity = new UserEntity();
 
-        entity.setId(service.getId());
-        entity.setName(service.getName());
+        entity.setId(user.getId());
+        entity.setName(user.getName());
 
         return entity;
     }
