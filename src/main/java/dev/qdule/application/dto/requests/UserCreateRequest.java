@@ -5,26 +5,16 @@ import java.util.List;
 import dev.qdule.domain.model.UserStatus;
 
 public class UserCreateRequest {
-    private Long id;
     public String name;
     public String password;
     public List<String> roles;
     public UserStatus status;
 
-    public UserCreateRequest(Long id, String name, String password, List<String> roles, UserStatus status) {
-        this.id = id;
+    public UserCreateRequest(String name, String password, List<String> roles, UserStatus status) {
         this.name = name;
         this.password = password;
         this.roles = roles;
         this.status = status;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {

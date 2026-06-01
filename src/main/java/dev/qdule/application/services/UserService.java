@@ -8,6 +8,7 @@ import dev.qdule.domain.model.User;
 import dev.qdule.domain.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class UserService {
@@ -26,6 +27,7 @@ public class UserService {
         return UserMapper.toResponse(user);
     }
 
+    @Transactional
     public UserResponse createUser(UserCreateRequest request) {
         User user = new User(
                 request.getName(),
@@ -33,9 +35,9 @@ public class UserService {
                 request.getRoles(),
                 request.getStatus());
 
-        userRepository.save(user);
+        var response = userRepository.save(user);
 
-        return UserMapper.toResponse(user);
+        return UserMapper.toResponse(response);
     }
 
 }

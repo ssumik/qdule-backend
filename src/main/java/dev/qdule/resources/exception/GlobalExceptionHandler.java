@@ -3,6 +3,7 @@ package dev.qdule.resources.exception;
 import java.time.LocalDateTime;
 
 import dev.qdule.application.exception.UserNotFoundException;
+import io.quarkus.logging.Log;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
@@ -20,13 +21,17 @@ public class GlobalExceptionHandler
                     exception.getMessage(),
                     LocalDateTime.now());
 
+            Log.warn("User not found: " + exception.getMessage());
+
             return Response.status(Response.Status.NOT_FOUND).entity(error).build();
         }
 
         ErrorResponse error = new ErrorResponse(
                 Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                "Internal server error",
+                "Internal server error: " + exception.getMessage(),
                 LocalDateTime.now());
+
+        Log.errorf(exception, "Internal server error");
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(error)

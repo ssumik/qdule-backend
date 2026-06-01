@@ -14,8 +14,6 @@ import jakarta.persistence.Table;
 
 import java.time.DayOfWeek;
 
-import dev.qdule.domain.model.Shift;
-
 @Entity
 @Table(name = "work_schedules")
 public class WorkSchedule {

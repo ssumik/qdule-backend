@@ -1,6 +1,5 @@
 package dev.qdule.infra.persistence.entities;
 
-import dev.qdule.domain.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
