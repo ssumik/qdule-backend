@@ -1,11 +1,13 @@
 package dev.qdule.infra.persistence.entities;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -16,21 +18,24 @@ import dev.qdule.domain.model.Shift;
 
 @Entity
 @Table(name = "work_schedules")
-public class WorkSchedule extends PanacheEntity {
+public class WorkSchedule {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "shift_id", nullable = false)
-    public Shift shift;
+    public ShiftEntity shift;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "day_of_week", nullable = false)
     public DayOfWeek dayOfWeek;
 
-    public Shift getShift() {
+    public ShiftEntity getShift() {
         return shift;
     }
 
-    public void setShift(Shift shift) {
+    public void setShift(ShiftEntity shift) {
         this.shift = shift;
     }
 

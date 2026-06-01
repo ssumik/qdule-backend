@@ -2,32 +2,36 @@ package dev.qdule.infra.persistence.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-import dev.qdule.domain.model.Client;
 import dev.qdule.domain.model.ScheduleStatus;
-import dev.qdule.domain.model.Treatment;
 
 @Entity
 @Table(name = "schedules")
 public class ScheduleEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "treatment_id", nullable = false)
-    public Treatment treatment;
+    public TreatmentEntity treatment;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
-    public Client client;
+    public ClientEntity client;
 
-    // TODO: validar esse status, nao sei se está ok desta forma
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "status_id", nullable = false)
+    @Enumerated(EnumType.STRING)
     public ScheduleStatus status;
 
     @Column(name = "start_date_time", nullable = false)
@@ -36,19 +40,19 @@ public class ScheduleEntity {
     @Column(name = "end_date_time", nullable = false)
     public LocalDateTime endDateTime;
 
-    public Treatment getTreatment() {
+    public TreatmentEntity getTreatment() {
         return treatment;
     }
 
-    public void setTreatment(Treatment treatment) {
+    public void setTreatment(TreatmentEntity treatment) {
         this.treatment = treatment;
     }
 
-    public Client getClient() {
+    public ClientEntity getClient() {
         return client;
     }
 
-    public void setClient(Client client) {
+    public void setClient(ClientEntity client) {
         this.client = client;
     }
 

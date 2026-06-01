@@ -36,7 +36,6 @@ public class TreatmentEntity {
     public String imagePath;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
     public TreatmentStatus status;
 
     public Long getId() {

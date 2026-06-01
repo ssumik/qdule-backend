@@ -3,17 +3,21 @@ package dev.qdule.infra.persistence.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-import dev.qdule.domain.model.Schedule;
-
 @Entity
 @Table(name = "changelogs")
 public class ChangelogEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "date_time", nullable = false)
     public LocalDateTime dateTime;
@@ -23,7 +27,7 @@ public class ChangelogEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "schedule_id", nullable = false)
-    public Schedule schedule;
+    public ScheduleEntity schedule;
 
     public LocalDateTime getDateTime() {
         return dateTime;
@@ -41,11 +45,11 @@ public class ChangelogEntity {
         this.description = description;
     }
 
-    public Schedule getSchedule() {
+    public ScheduleEntity getSchedule() {
         return schedule;
     }
 
-    public void setSchedule(Schedule schedule) {
+    public void setSchedule(ScheduleEntity schedule) {
         this.schedule = schedule;
     }
 }

@@ -29,7 +29,7 @@ public class ClientEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    public User user;
+    public UserEntity user;
 
     public Long getId() {
         return id;
@@ -63,11 +63,11 @@ public class ClientEntity {
         this.cellPhone = cellPhone;
     }
 
-    public User getUser() {
+    public UserEntity getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserEntity user) {
         this.user = user;
     }
 }

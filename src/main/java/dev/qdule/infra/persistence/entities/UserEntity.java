@@ -35,7 +35,6 @@ public class UserEntity {
     public List<String> roles;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
     public UserStatus status;
 
     public Long getId() {
