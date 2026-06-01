@@ -8,7 +8,10 @@ public class UserEntityMapper {
     public static User toDomain(UserEntity entity) {
         return new User(
                 entity.getId(),
-                entity.getName());
+                entity.getName(),
+                entity.getPassword(),
+                entity.getRoles(),
+                entity.getStatus());
     }
 
     public static UserEntity toEntity(User user) {
@@ -16,6 +19,9 @@ public class UserEntityMapper {
 
         entity.setId(user.getId());
         entity.setName(user.getName());
+        entity.setPassword(user.getPassword());
+        entity.setRoles(user.getRoles());
+        entity.setStatus(user.getStatus());
 
         return entity;
     }

@@ -1,22 +1,17 @@
-package dev.qdule.domain.model;
+package dev.qdule.application.dto.requests;
 
 import java.util.List;
 
-public class User {
+import dev.qdule.domain.model.UserStatus;
+
+public class UserCreateRequest {
     private Long id;
     public String name;
     public String password;
     public List<String> roles;
     public UserStatus status;
 
-    public User(String name, String password, List<String> roles, UserStatus status) {
-        this.name = name;
-        this.password = password;
-        this.roles = roles;
-        this.status = status;
-    }
-
-    public User(Long id, String name, String password, List<String> roles, UserStatus status) {
+    public UserCreateRequest(Long id, String name, String password, List<String> roles, UserStatus status) {
         this.id = id;
         this.name = name;
         this.password = password;
