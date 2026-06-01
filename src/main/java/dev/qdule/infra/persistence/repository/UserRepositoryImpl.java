@@ -6,6 +6,7 @@ import dev.qdule.application.exception.UserNotFoundException;
 import dev.qdule.domain.model.User;
 import dev.qdule.domain.repository.UserRepository;
 import dev.qdule.infra.mapper.UserEntityMapper;
+import dev.qdule.infra.persistence.entities.UserEntity;
 import dev.qdule.infra.persistence.panache.UserRespositoryPanache;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -21,7 +22,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findById(Long id) {
-        return Optional.of(UserEntityMapper.toDomain(userRespositoryPanache.findById(id)));
+        return Optional.ofNullable(
+                userRespositoryPanache.findById(id))
+                .map(UserEntityMapper::toDomain);
     }
 
     @Override
