@@ -2,10 +2,31 @@ package dev.qdule.domain.model;
 
 public class Client {
     private Long id;
-    public String name;
-    public String email;
-    public String cellPhone;
-    public User user;
+    private String name;
+    private String email;
+    private String cellPhone;
+    private User user;
+
+    public Client(Long id, String name, String email, String cellPhone, User user) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.cellPhone = cellPhone;
+        this.user = user;
+    }
+
+    public Client(String name, String email, String cellPhone, User user) {
+        this.name = name;
+        this.email = email;
+        this.cellPhone = cellPhone;
+        this.user = user;
+    }
+
+    public Client(String name, String email, String cellPhone) {
+        this.name = name;
+        this.email = email;
+        this.cellPhone = cellPhone;
+    }
 
     public Long getId() {
         return id;

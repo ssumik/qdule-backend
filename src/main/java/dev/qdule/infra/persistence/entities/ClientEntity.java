@@ -7,7 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,13 +20,13 @@ public class ClientEntity {
     @Column(name = "name", nullable = false, length = 150)
     public String name;
 
-    @Column(name = "email", length = 255)
+    @Column(name = "email", length = 255, unique = true)
     public String email;
 
     @Column(name = "cell_phone", length = 20)
     public String cellPhone;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public UserEntity user;
 
