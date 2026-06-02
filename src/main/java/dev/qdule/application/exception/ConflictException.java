@@ -5,7 +5,7 @@ public class ConflictException extends RuntimeException {
         super("Conflict found for id: " + id + " - " + msg);
     }
 
-    public ConflictException(String id) {
-        super("Conflict found for id: " + id);
+    public ConflictException(String msg) {
+        super("Conflict found: " + msg);
     }
 }
