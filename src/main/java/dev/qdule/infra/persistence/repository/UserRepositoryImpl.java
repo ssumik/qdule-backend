@@ -29,8 +29,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        userRespositoryPanache.persist(UserEntityMapper.toEntity(user));
-        return user;
+        UserEntity userEntity = UserEntityMapper.toEntity(user);
+        var em = userRespositoryPanache.getEntityManager();
+        var entity = em.merge(userEntity);
+        return UserEntityMapper.toDomain(entity);
     }
 
     @Override

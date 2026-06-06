@@ -1,31 +1,20 @@
-package dev.qdule.domain.model;
+package dev.qdule.application.dto.responses;
 
-public class Client {
+import dev.qdule.domain.model.User;
+
+public class ClientResponse {
     private Long id;
     private String name;
     private String email;
     private String cellPhone;
     private User user;
 
-    public Client(Long id, String name, String email, String cellPhone, User user) {
+    public ClientResponse(Long id, String name, String email, String cellPhone, User userId) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.cellPhone = cellPhone;
-        this.user = user;
-    }
-
-    public Client(String name, String email, String cellPhone, User user) {
-        this.name = name;
-        this.email = email;
-        this.cellPhone = cellPhone;
-        this.user = user;
-    }
-
-    public Client(String name, String email, String cellPhone) {
-        this.name = name;
-        this.email = email;
-        this.cellPhone = cellPhone;
+        this.user = userId;
     }
 
     public Long getId() {
@@ -34,6 +23,14 @@ public class Client {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User userId) {
+        this.user = userId;
     }
 
     public String getName() {
@@ -58,13 +55,5 @@ public class Client {
 
     public void setCellPhone(String cellPhone) {
         this.cellPhone = cellPhone;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }
