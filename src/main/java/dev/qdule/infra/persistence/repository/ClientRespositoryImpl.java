@@ -2,9 +2,11 @@ package dev.qdule.infra.persistence.repository;
 
 import java.util.Optional;
 
+import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.domain.model.Client;
 import dev.qdule.domain.repository.ClientRepository;
 import dev.qdule.infra.mapper.ClientEntityMapper;
+import dev.qdule.infra.persistence.entities.ClientEntity;
 import dev.qdule.infra.persistence.panache.ClientRepositoryPanache;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -34,14 +36,17 @@ public class ClientRespositoryImpl implements ClientRepository {
 
     @Override
     public Client save(Client client) {
-        clientRepositoryPanache
-                .persist(ClientEntityMapper.toEntity(client));
-        return client;
+        ClientEntity clientEntity = ClientEntityMapper.toEntity(client);
+        var em = clientRepositoryPanache.getEntityManager();
+        var entity = em.merge(clientEntity);
+        return ClientEntityMapper.toDomain(entity);
     }
 
     @Override
     public void removeById(Long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'removeById'");
+        if (!clientRepositoryPanache.deleteById(id)) {
+            throw new ClientNotFoundException(id);
+        }
     }
 
 }

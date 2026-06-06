@@ -2,6 +2,7 @@ package dev.qdule.resources.exception;
 
 import java.time.LocalDateTime;
 
+import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.UserNotFoundException;
 import io.quarkus.logging.Log;
@@ -23,6 +24,15 @@ public class GlobalExceptionHandler
                     LocalDateTime.now());
             Log.warn("User not found: " + exception.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(error).build();
+        }
+
+        if (exception instanceof ClientNotFoundException) {
+            ErrorResponse error = new ErrorResponse(
+                    Response.Status.NOT_FOUND.getStatusCode(),
+                    exception.getMessage(),
+                    LocalDateTime.now());
+            Log.warn("Client not found: " + exception.getMessage());
+            return Response.status(Response.Status.CONFLICT).entity(error).build();
         }
 
         if (exception instanceof ConflictException) {
