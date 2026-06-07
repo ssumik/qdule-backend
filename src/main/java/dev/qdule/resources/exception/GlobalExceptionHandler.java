@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.application.exception.ConflictException;
+import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.exception.UserNotFoundException;
 import io.quarkus.logging.Log;
 import jakarta.ws.rs.core.Response;
@@ -42,6 +43,15 @@ public class GlobalExceptionHandler
                     LocalDateTime.now());
             Log.warn("Conflict found: " + exception.getMessage());
             return Response.status(Response.Status.CONFLICT).entity(error).build();
+        }
+
+        if (exception instanceof TreatmentNotFoundException) {
+            ErrorResponse error = new ErrorResponse(
+                    Response.Status.NOT_FOUND.getStatusCode(),
+                    exception.getMessage(),
+                    LocalDateTime.now());
+            Log.warn("Treatment not found: " + exception.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(error).build();
         }
 
         ErrorResponse error = new ErrorResponse(
