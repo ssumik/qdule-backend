@@ -21,22 +21,36 @@ public class TreatmentEntity {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 150)
-    public String name;
+    private String name;
 
     @Column(name = "description", columnDefinition = "TEXT")
-    public String description;
+    private String description;
 
     @Column(name = "duration", nullable = false)
-    public Duration duration;
+    private Duration duration;
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
-    public BigDecimal price;
+    private BigDecimal price;
 
     @Column(name = "image_path", length = 500)
-    public String imagePath;
+    private String imagePath;
 
     @Enumerated(EnumType.STRING)
-    public TreatmentStatus status;
+    private TreatmentStatus status;
+
+    public TreatmentEntity() {
+    }
+
+    public TreatmentEntity(Long id, String name, String description, Duration duration, BigDecimal price,
+            String imagePath, TreatmentStatus status) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+        this.price = price;
+        this.imagePath = imagePath;
+        this.status = status;
+    }
 
     public Long getId() {
         return id;

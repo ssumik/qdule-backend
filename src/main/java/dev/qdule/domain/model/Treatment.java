@@ -5,12 +5,23 @@ import java.time.Duration;
 
 public class Treatment {
     private Long id;
-    public String name;
-    public String description;
-    public Duration duration;
-    public BigDecimal price;
-    public String imagePath;
-    public TreatmentStatus status;
+    private String name;
+    private String description;
+    private Duration duration;
+    private BigDecimal price;
+    private String imagePath;
+    private TreatmentStatus status;
+
+    public Treatment(Long id, String name, String description, Duration duration, BigDecimal price, String imagePath,
+            TreatmentStatus status) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+        this.price = price;
+        this.imagePath = imagePath;
+        this.status = status;
+    }
 
     public Long getId() {
         return id;
