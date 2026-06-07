@@ -25,20 +25,20 @@ public class ScheduleEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "treatment_id", nullable = false)
-    public TreatmentEntity treatment;
+    private TreatmentEntity treatment;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
-    public ClientEntity client;
+    private ClientEntity client;
 
     @Enumerated(EnumType.STRING)
-    public ScheduleStatus status;
+    private ScheduleStatus status;
 
     @Column(name = "start_date_time", nullable = false)
-    public LocalDateTime startDateTime;
+    private LocalDateTime startDateTime;
 
     @Column(name = "end_date_time", nullable = false)
-    public LocalDateTime endDateTime;
+    private LocalDateTime endDateTime;
 
     public TreatmentEntity getTreatment() {
         return treatment;

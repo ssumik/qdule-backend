@@ -17,13 +17,13 @@ public class ScheduleExceptionEntity {
     private Long id;
 
     @Column(name = "start_date_time", nullable = false)
-    public LocalDateTime startDateTime;
+    private LocalDateTime startDateTime;
 
     @Column(name = "end_date_time", nullable = false)
-    public LocalDateTime endDateTime;
+    private LocalDateTime endDateTime;
 
     @Column(name = "reason", columnDefinition = "TEXT")
-    public String reason;
+    private String reason;
 
     public LocalDateTime getStartDateTime() {
         return startDateTime;

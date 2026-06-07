@@ -4,12 +4,12 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 public class Shift {
-    public String name;
-    public LocalTime startTime;
-    public LocalTime endTime;
-    public Duration restTimeBetweenAppointments;
-    public LocalTime breakStartTime;
-    public LocalTime breakEndTime;
+    private String name;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private Duration restTimeBetweenAppointments;
+    private LocalTime breakStartTime;
+    private LocalTime breakEndTime;
 
     public String getName() {
         return name;

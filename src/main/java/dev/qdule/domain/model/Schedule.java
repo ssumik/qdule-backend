@@ -3,9 +3,9 @@ package dev.qdule.domain.model;
 import java.time.LocalDateTime;
 
 public class Schedule {
-    public LocalDateTime startDateTime;
-    public LocalDateTime endDateTime;
-    public String reason;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
+    private String reason;
 
     public LocalDateTime getStartDateTime() {
         return startDateTime;

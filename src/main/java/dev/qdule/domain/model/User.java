@@ -4,10 +4,10 @@ import java.util.List;
 
 public class User {
     private Long id;
-    public String name;
-    public String password;
-    public List<String> roles;
-    public UserStatus status;
+    private String name;
+    private String password;
+    private List<String> roles;
+    private UserStatus status;
 
     public User(String name, String password, List<String> roles, UserStatus status) {
         this.name = name;

@@ -20,14 +20,14 @@ public class ChangelogEntity {
     private Long id;
 
     @Column(name = "date_time", nullable = false)
-    public LocalDateTime dateTime;
+    private LocalDateTime dateTime;
 
     @Column(name = "description", columnDefinition = "TEXT")
-    public String description;
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "schedule_id", nullable = false)
-    public ScheduleEntity schedule;
+    private ScheduleEntity schedule;
 
     public LocalDateTime getDateTime() {
         return dateTime;
