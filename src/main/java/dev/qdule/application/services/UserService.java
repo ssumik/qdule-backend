@@ -32,8 +32,10 @@ public class UserService {
         User user = new User(
                 request.getName(),
                 request.getPassword(),
-                request.getRoles(),
-                request.getStatus());
+                request.getEmail()
+                // request.getRoles(),
+                // request.getStatus(),
+                );
 
         var response = userRepository.save(user);
 
