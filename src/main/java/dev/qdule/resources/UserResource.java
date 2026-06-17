@@ -29,6 +29,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response findUserById(@PathParam("id") Long id) {
         UserResponse response = userService.findUserById(id);
+        
         return Response.ok().entity(response).build();
     }
 

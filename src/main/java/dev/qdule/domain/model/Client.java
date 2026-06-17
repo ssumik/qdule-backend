@@ -5,21 +5,12 @@ public class Client {
     private String name;
     private String email;
     private String cellPhone;
-    private User user;
 
-    public Client(Long id, String name, String email, String cellPhone, User user) {
+    public Client(Long id, String name, String email, String cellPhone) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.cellPhone = cellPhone;
-        this.user = user;
-    }
-
-    public Client(String name, String email, String cellPhone, User user) {
-        this.name = name;
-        this.email = email;
-        this.cellPhone = cellPhone;
-        this.user = user;
     }
 
     public Client(String name, String email, String cellPhone) {
@@ -58,13 +49,5 @@ public class Client {
 
     public void setCellPhone(String cellPhone) {
         this.cellPhone = cellPhone;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }
