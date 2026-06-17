@@ -1,9 +1,11 @@
-package dev.qdule.domain.model;
+package dev.qdule.application.dto.responses;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 
-public class Treatment {
+import dev.qdule.domain.model.TreatmentStatus;
+
+public class TreatmentResponse {
     private Long id;
     private String name;
     private String description;
@@ -12,18 +14,18 @@ public class Treatment {
     private String imagePath;
     private TreatmentStatus status;
 
-    public Treatment(String name, String description, Duration duration, BigDecimal price, String imagePath,
-            TreatmentStatus status) {
-        this.name = name;
-        this.description = description;
-        this.duration = duration;
-        this.price = price;
-        this.imagePath = imagePath;
-        this.status = status;
+    public TreatmentResponse() {
     }
 
-    public Treatment(Long id, String name, String description, Duration duration, BigDecimal price, String imagePath,
+    public TreatmentResponse(
+            Long id,
+            String name,
+            String description,
+            Duration duration,
+            BigDecimal price,
+            String imagePath,
             TreatmentStatus status) {
+
         this.id = id;
         this.name = name;
         this.description = description;

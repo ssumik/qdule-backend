@@ -1,7 +1,9 @@
 package dev.qdule.infra.persistence.repository;
 
+import java.util.List;
 import java.util.Optional;
 
+import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.domain.model.Treatment;
 import dev.qdule.domain.repository.TreatmentRepository;
@@ -40,6 +42,29 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
         if (!treatmentRepositoryPanache.deleteById(id)) {
             throw new TreatmentNotFoundException(id);
         }
+    }
+
+    @Override
+    public PageResponse<Treatment> findAll(int page, int size) {
+        var pageResponse = new PageResponse<Treatment>();
+
+        pageResponse.setContent(treatmentRepositoryPanache
+                .findAll()
+                .page(page, size)
+                .list()
+                .stream()
+                .map(TreatmentEntityMapper::toDomain)
+                .toList());
+        pageResponse.setPage(page);
+        pageResponse.setSize(size);
+        pageResponse.setTotalElements(treatmentRepositoryPanache
+                .findAll().count());
+        pageResponse.setTotalPages(treatmentRepositoryPanache.getEntityManager()
+                .createQuery("SELECT COUNT(t) FROM TreatmentEntity t", Long.class)
+                .getSingleResult()
+                .intValue() / size);
+
+        return pageResponse;
     }
 
 }
