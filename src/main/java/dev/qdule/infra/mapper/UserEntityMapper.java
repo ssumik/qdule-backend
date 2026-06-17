@@ -10,8 +10,9 @@ public class UserEntityMapper {
                 entity.getId(),
                 entity.getName(),
                 entity.getPassword(),
-                entity.getRoles(),
-                entity.getStatus());
+                // entity.getRoles(),
+                // entity.getStatus(),
+                entity.getEmail());
     }
 
     public static UserEntity toEntity(User user) {
@@ -20,8 +21,10 @@ public class UserEntityMapper {
         entity.setId(user.getId());
         entity.setName(user.getName());
         entity.setPassword(user.getPassword());
-        entity.setRoles(user.getRoles());
-        entity.setStatus(user.getStatus());
+        entity.setEmail(user.getEmail());
+        
+        // entity.setRoles(user.getRoles());
+        // entity.setStatus(user.getStatus());
 
         return entity;
     }

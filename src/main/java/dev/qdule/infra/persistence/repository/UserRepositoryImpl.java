@@ -28,6 +28,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByEmail(String email) {
+        return userRespositoryPanache
+                .find("email", email)
+                .firstResultOptional()
+                .map(UserEntityMapper::toDomain);
+    }
+
+    @Override
     public User save(User user) {
         UserEntity userEntity = UserEntityMapper.toEntity(user);
         var em = userRespositoryPanache.getEntityManager();

@@ -9,8 +9,7 @@ public class ClientEntityMapper {
                 entity.getId(),
                 entity.getName(),
                 entity.getEmail(),
-                entity.getCellPhone(),
-                null);
+                entity.getCellPhone());
     }
 
     public static ClientEntity toEntity(Client client) {

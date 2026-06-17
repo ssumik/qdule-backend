@@ -1,27 +1,33 @@
 package dev.qdule.domain.model;
 
-import java.util.List;
-
 public class User {
     private Long id;
     public String name;
+    public String email;
     public String password;
-    public List<String> roles;
-    public UserStatus status;
+    // public List<String> roles; // Questionavel
+    // public UserStatus status; // ?
+    
 
-    public User(String name, String password, List<String> roles, UserStatus status) {
+    public User(String name, String password,
+    //  List<String> roles, UserStatus status, 
+     String email) {
         this.name = name;
         this.password = password;
-        this.roles = roles;
-        this.status = status;
+        // this.roles = roles;
+        // this.status = status;
+        this.email = email;
     }
 
-    public User(Long id, String name, String password, List<String> roles, UserStatus status) {
+    public User(Long id, String name, String password,
+    //  List<String> roles, UserStatus status, 
+     String email) {
         this.id = id;
         this.name = name;
         this.password = password;
-        this.roles = roles;
-        this.status = status;
+        // this.roles = roles;
+        // this.status = status;
+        this.email = email;
     }
 
     public Long getId() {
@@ -48,19 +54,27 @@ public class User {
         this.password = password;
     }
 
-    public List<String> getRoles() {
-        return roles;
+    // public List<String> getRoles() {
+    //     return roles;
+    // }
+
+    // public void setRoles(List<String> roles) {
+    //     this.roles = roles;
+    // }
+
+    // public UserStatus getStatus() {
+    //     return status;
+    // }
+
+    // public void setStatus(UserStatus status) {
+    //     this.status = status;
+    // }
+
+    public String getEmail() {
+        return email;
     }
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
-
-    public UserStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(UserStatus status) {
-        this.status = status;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
