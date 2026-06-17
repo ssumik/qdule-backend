@@ -8,6 +8,7 @@ import dev.qdule.domain.model.Treatment;
 import dev.qdule.domain.repository.TreatmentRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class TreatmentService {
@@ -43,6 +44,7 @@ public class TreatmentService {
         return TreatmentMapper.toResponse(treatment);
     }
 
+    @Transactional
     public TreatmentResponse createTreatment(TreatmentCreateRequest treatmentRequest) {
         Treatment treatment = new Treatment(
                 treatmentRequest.getName(),
@@ -57,8 +59,11 @@ public class TreatmentService {
         return TreatmentMapper.toResponse(savedTreatment);
     }
 
+    @Transactional
     public void deleteTreatmentById(Long id) {
         treatmentRepository.removeById(id);
     }
+
+    // TODO: FALTA ADICIONAR O PUT
 
 }
