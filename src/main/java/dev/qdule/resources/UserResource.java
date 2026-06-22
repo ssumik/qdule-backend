@@ -3,6 +3,7 @@ package dev.qdule.resources;
 import dev.qdule.application.dto.requests.UserCreateRequest;
 import dev.qdule.application.dto.responses.UserResponse;
 import dev.qdule.application.services.UserService;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -26,6 +27,7 @@ public class UserResource {
 
     @GET
     @Path("/{id}")
+    @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
     public Response findUserById(@PathParam("id") Long id) {
         UserResponse response = userService.findUserById(id);
@@ -34,6 +36,7 @@ public class UserResource {
     }
 
     @POST
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(UserCreateRequest request) {

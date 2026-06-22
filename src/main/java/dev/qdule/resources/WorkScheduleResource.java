@@ -5,7 +5,7 @@ import dev.qdule.application.dto.requests.WorkScheduleUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.WorkScheduleResponse;
 import dev.qdule.application.services.WorkScheduleService;
-import jakarta.ws.rs.core.MediaType;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -16,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/work-schedules")
@@ -45,6 +46,7 @@ public class WorkScheduleResource {
     }
 
     @POST
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createWorkSchedule(WorkScheduleCreateRequest request) {
@@ -56,6 +58,7 @@ public class WorkScheduleResource {
 
     @PUT
     @Path("/{id}")
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateWorkSchedule(@PathParam("id") Long id, WorkScheduleUpdateRequest request) {
@@ -64,6 +67,7 @@ public class WorkScheduleResource {
     }
 
     @DELETE
+    @Authenticated
     @Path("/{id}")
     public Response deleteWorkScheduleById(@PathParam("id") Long id) {
         workScheduleService.deleteWorkScheduleById(id);
