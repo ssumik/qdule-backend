@@ -2,18 +2,16 @@ package dev.qdule.application.dto.requests;
 
 import java.time.DayOfWeek;
 
-import dev.qdule.domain.model.Shift;
-
 public class WorkScheduleCreateRequest {
-    private Shift shift;
+    private long shiftId;
     private DayOfWeek dayOfWeek;
 
-    public Shift getShift() {
-        return shift;
+    public long getShiftId() {
+        return shiftId;
     }
 
-    public void setShift(Shift shift) {
-        this.shift = shift;
+    public void setShiftId(long shiftId) {
+        this.shiftId = shiftId;
     }
 
     public DayOfWeek getDayOfWeek() {

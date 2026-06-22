@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 public class Schedule {
     private Long id;
-    private Long treatmentId;
-    private Long clientId;
+    private Treatment treatmentId;
+    private Client clientId;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private String reason;
@@ -14,7 +14,7 @@ public class Schedule {
     public Schedule() {
     }
 
-    public Schedule(Long treatmentId, Long clientId, LocalDateTime startDateTime, LocalDateTime endDateTime,
+    public Schedule(Treatment treatmentId, Client clientId, LocalDateTime startDateTime, LocalDateTime endDateTime,
             String reason, ScheduleStatus status) {
         this.treatmentId = treatmentId;
         this.clientId = clientId;
@@ -24,7 +24,8 @@ public class Schedule {
         this.status = status;
     }
 
-    public Schedule(Long id, Long treatmentId, Long clientId, LocalDateTime startDateTime, LocalDateTime endDateTime,
+    public Schedule(Long id, Treatment treatmentId, Client clientId, LocalDateTime startDateTime,
+            LocalDateTime endDateTime,
             String reason, ScheduleStatus status) {
         this.id = id;
         this.treatmentId = treatmentId;
@@ -43,19 +44,19 @@ public class Schedule {
         this.id = id;
     }
 
-    public Long getTreatmentId() {
+    public Treatment getTreatment() {
         return treatmentId;
     }
 
-    public void setTreatmentId(Long treatmentId) {
+    public void setTreatment(Treatment treatmentId) {
         this.treatmentId = treatmentId;
     }
 
-    public Long getClientId() {
+    public Client getClient() {
         return clientId;
     }
 
-    public void setClientId(Long clientId) {
+    public void setClient(Client clientId) {
         this.clientId = clientId;
     }
 

@@ -30,14 +30,7 @@ public class ShiftRepositoryImpl implements ShiftRepository {
 
     @Override
     public Shift save(Shift shift) {
-        ShiftEntity shiftEntity = shiftRepositoryPanache.findById(shift.getId());
-        if (shiftEntity == null) {
-            shiftEntity = new ShiftEntity();
-        }
         var entity = ShiftEntityMapper.toEntity(shift);
-        if (shift.getId() != null) {
-            entity.setId(shift.getId());
-        }
         var em = shiftRepositoryPanache.getEntityManager();
         var merged = em.merge(entity);
         return ShiftEntityMapper.toDomain(merged);

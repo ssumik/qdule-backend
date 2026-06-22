@@ -3,6 +3,7 @@ package dev.qdule.infra.mapper;
 import dev.qdule.domain.model.Changelog;
 import dev.qdule.infra.persistence.entities.ChangelogEntity;
 
+//TODO: PRECISA REVISAR O CHANGELOG
 public class ChangelogEntityMapper {
     public static Changelog toDomain(ChangelogEntity entity) {
         return new Changelog(

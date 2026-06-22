@@ -7,6 +7,7 @@ import dev.qdule.application.exception.WorkScheduleNotFoundException;
 import dev.qdule.domain.model.WorkSchedule;
 import dev.qdule.domain.repository.WorkScheduleRepository;
 import dev.qdule.infra.mapper.WorkScheduleEntityMapper;
+import dev.qdule.infra.persistence.entities.WorkScheduleEntity;
 import dev.qdule.infra.persistence.panache.WorkScheduleRepositoryPanache;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -29,12 +30,7 @@ public class WorkScheduleRepositoryImpl implements WorkScheduleRepository {
 
     @Override
     public WorkSchedule save(WorkSchedule workSchedule) {
-        dev.qdule.infra.persistence.entities.WorkScheduleEntity workScheduleEntity = workScheduleRepositoryPanache
-                .findById(workSchedule.getId());
-        if (workScheduleEntity == null) {
-            workScheduleEntity = new dev.qdule.infra.persistence.entities.WorkScheduleEntity();
-        }
-        var entity = WorkScheduleEntityMapper.toEntity(workSchedule, workScheduleEntity);
+        var entity = WorkScheduleEntityMapper.toEntity(workSchedule);
         var em = workScheduleRepositoryPanache.getEntityManager();
         var merged = em.merge(entity);
         return WorkScheduleEntityMapper.toDomain(merged);

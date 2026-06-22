@@ -4,6 +4,7 @@ import dev.qdule.application.dto.requests.TreatmentCreateRequest;
 import dev.qdule.application.dto.requests.TreatmentUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.TreatmentResponse;
+import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.mapper.TreatmentMapper;
 import dev.qdule.domain.model.Treatment;
 import dev.qdule.domain.repository.TreatmentRepository;
@@ -41,7 +42,7 @@ public class TreatmentService {
 
     public TreatmentResponse getTreatmentById(Long id) {
         Treatment treatment = treatmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Treatment not found"));
+                .orElseThrow(() -> new TreatmentNotFoundException(id));
         return TreatmentMapper.toResponse(treatment);
     }
 

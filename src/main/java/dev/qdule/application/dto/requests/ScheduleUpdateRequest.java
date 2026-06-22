@@ -5,28 +5,10 @@ import java.time.LocalDateTime;
 import dev.qdule.domain.model.ScheduleStatus;
 
 public class ScheduleUpdateRequest {
-    private Long treatmentId;
-    private Long clientId;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private String reason;
     private ScheduleStatus status;
-
-    public Long getTreatmentId() {
-        return treatmentId;
-    }
-
-    public void setTreatmentId(Long treatmentId) {
-        this.treatmentId = treatmentId;
-    }
-
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
 
     public LocalDateTime getStartDateTime() {
         return startDateTime;
