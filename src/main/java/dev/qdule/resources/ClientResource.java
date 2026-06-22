@@ -29,6 +29,7 @@ public class ClientResource {
     }
 
     @POST
+    // @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createClient(ClientCreateRequest request) {
@@ -40,6 +41,7 @@ public class ClientResource {
 
     @DELETE
     @Path("/{id}")
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteClient(@PathParam("id") Long id) {
         clientService.deleteClient(id);
@@ -58,6 +60,7 @@ public class ClientResource {
 
     @PUT
     @Path("/{id}")
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateClient(@PathParam("id") Long id, ClientUpdateRequest request) {

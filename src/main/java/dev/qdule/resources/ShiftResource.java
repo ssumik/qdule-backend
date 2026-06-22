@@ -5,7 +5,7 @@ import dev.qdule.application.dto.requests.ShiftUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ShiftResponse;
 import dev.qdule.application.services.ShiftService;
-import jakarta.ws.rs.core.MediaType;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -16,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/shifts")
@@ -38,6 +39,7 @@ public class ShiftResource {
 
     @GET
     @Path("/{id}")
+    @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
     public Response findShiftById(@PathParam("id") Long id) {
         ShiftResponse response = shiftService.getShiftById(id);
@@ -45,6 +47,7 @@ public class ShiftResource {
     }
 
     @POST
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createShift(ShiftCreateRequest request) {
@@ -56,6 +59,7 @@ public class ShiftResource {
 
     @PUT
     @Path("/{id}")
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateShift(@PathParam("id") Long id, ShiftUpdateRequest request) {
@@ -64,6 +68,7 @@ public class ShiftResource {
     }
 
     @DELETE
+    @Authenticated
     @Path("/{id}")
     public Response deleteShiftById(@PathParam("id") Long id) {
         shiftService.deleteShiftById(id);

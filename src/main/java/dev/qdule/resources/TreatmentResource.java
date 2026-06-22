@@ -5,7 +5,7 @@ import dev.qdule.application.dto.requests.TreatmentUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.TreatmentResponse;
 import dev.qdule.application.services.TreatmentService;
-import jakarta.ws.rs.core.MediaType;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -16,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/treatments")
@@ -45,6 +46,7 @@ public class TreatmentResource {
     }
 
     @POST
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createTreatment(TreatmentCreateRequest request) {
@@ -55,6 +57,7 @@ public class TreatmentResource {
     }
 
     @DELETE
+    @Authenticated
     @Path("/{id}")
     public Response deleteTreatmentById(@PathParam("id") Long id) {
         treatmentService.deleteTreatmentById(id);
@@ -63,6 +66,7 @@ public class TreatmentResource {
 
     @PUT
     @Path("/{id}")
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateTreatment(@PathParam("id") Long id, TreatmentUpdateRequest request) {

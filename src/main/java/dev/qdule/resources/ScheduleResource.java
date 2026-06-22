@@ -5,7 +5,7 @@ import dev.qdule.application.dto.requests.ScheduleUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ScheduleResponse;
 import dev.qdule.application.services.ScheduleService;
-import jakarta.ws.rs.core.MediaType;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -16,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/schedules")
@@ -45,6 +46,7 @@ public class ScheduleResource {
     }
 
     @POST
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createSchedule(ScheduleCreateRequest request) {
@@ -56,6 +58,7 @@ public class ScheduleResource {
 
     @PUT
     @Path("/{id}")
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateSchedule(@PathParam("id") Long id, ScheduleUpdateRequest request) {
@@ -65,6 +68,7 @@ public class ScheduleResource {
 
     @DELETE
     @Path("/{id}")
+    @Authenticated
     public Response deleteScheduleById(@PathParam("id") Long id) {
         scheduleService.deleteScheduleById(id);
         return Response.noContent().build();

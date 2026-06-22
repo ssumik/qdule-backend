@@ -2,10 +2,9 @@ package dev.qdule.resources;
 
 import dev.qdule.application.dto.requests.ChangelogCreateRequest;
 import dev.qdule.application.dto.requests.ChangelogUpdateRequest;
-import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ChangelogResponse;
+import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.services.ChangelogService;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -16,6 +15,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/changelogs")
