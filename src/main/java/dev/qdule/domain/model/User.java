@@ -7,11 +7,10 @@ public class User {
     public String password;
     // public List<String> roles; // Questionavel
     // public UserStatus status; // ?
-    
 
     public User(String name, String password,
-    //  List<String> roles, UserStatus status, 
-     String email) {
+            // List<String> roles, UserStatus status,
+            String email) {
         this.name = name;
         this.password = password;
         // this.roles = roles;
@@ -20,8 +19,8 @@ public class User {
     }
 
     public User(Long id, String name, String password,
-    //  List<String> roles, UserStatus status, 
-     String email) {
+            // List<String> roles, UserStatus status,
+            String email) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -55,19 +54,19 @@ public class User {
     }
 
     // public List<String> getRoles() {
-    //     return roles;
+    // return roles;
     // }
 
     // public void setRoles(List<String> roles) {
-    //     this.roles = roles;
+    // this.roles = roles;
     // }
 
     // public UserStatus getStatus() {
-    //     return status;
+    // return status;
     // }
 
     // public void setStatus(UserStatus status) {
-    //     this.status = status;
+    // this.status = status;
     // }
 
     public String getEmail() {

@@ -1,47 +1,16 @@
-package dev.qdule.domain.model;
+package dev.qdule.application.dto.requests;
 
 import java.time.LocalDateTime;
 
-public class Schedule {
-    private Long id;
+import dev.qdule.domain.model.ScheduleStatus;
+
+public class ScheduleUpdateRequest {
     private Long treatmentId;
     private Long clientId;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private String reason;
     private ScheduleStatus status;
-
-    public Schedule() {
-    }
-
-    public Schedule(Long treatmentId, Long clientId, LocalDateTime startDateTime, LocalDateTime endDateTime,
-            String reason, ScheduleStatus status) {
-        this.treatmentId = treatmentId;
-        this.clientId = clientId;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-        this.reason = reason;
-        this.status = status;
-    }
-
-    public Schedule(Long id, Long treatmentId, Long clientId, LocalDateTime startDateTime, LocalDateTime endDateTime,
-            String reason, ScheduleStatus status) {
-        this.id = id;
-        this.treatmentId = treatmentId;
-        this.clientId = clientId;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-        this.reason = reason;
-        this.status = status;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getTreatmentId() {
         return treatmentId;

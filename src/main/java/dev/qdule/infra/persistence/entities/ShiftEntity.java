@@ -19,22 +19,30 @@ public class ShiftEntity {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 100)
-    public String name;
+    private String name;
 
     @Column(name = "start_time", nullable = false)
-    public LocalTime startTime;
+    private LocalTime startTime;
 
     @Column(name = "end_time", nullable = false)
-    public LocalTime endTime;
+    private LocalTime endTime;
 
     @Column(name = "rest_time_between_appointments")
-    public Duration restTimeBetweenAppointments;
+    private Duration restTimeBetweenAppointments;
 
     @Column(name = "break_start_time")
-    public LocalTime breakStartTime;
+    private LocalTime breakStartTime;
 
     @Column(name = "break_end_time")
-    public LocalTime breakEndTime;
+    private LocalTime breakEndTime;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

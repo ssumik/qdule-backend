@@ -16,18 +16,26 @@ import java.time.DayOfWeek;
 
 @Entity
 @Table(name = "work_schedules")
-public class WorkSchedule {
+public class WorkScheduleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "shift_id", nullable = false)
-    public ShiftEntity shift;
+    private ShiftEntity shift;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "day_of_week", nullable = false)
-    public DayOfWeek dayOfWeek;
+    private DayOfWeek dayOfWeek;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public ShiftEntity getShift() {
         return shift;
