@@ -15,14 +15,13 @@ public class ClientEntity {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 150)
-    public String name;
+    private String name;
 
     @Column(name = "email", length = 255, unique = true)
-    public String email;
+    private String email;
 
     @Column(name = "cell_phone", length = 20)
-    public String cellPhone;
-
+    private String cellPhone;
 
     public Long getId() {
         return id;

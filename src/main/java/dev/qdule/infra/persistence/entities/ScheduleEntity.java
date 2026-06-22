@@ -25,20 +25,39 @@ public class ScheduleEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "treatment_id", nullable = false)
-    public TreatmentEntity treatment;
+    private TreatmentEntity treatment;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
-    public ClientEntity client;
+    private ClientEntity client;
 
     @Enumerated(EnumType.STRING)
-    public ScheduleStatus status;
+    private ScheduleStatus status;
 
     @Column(name = "start_date_time", nullable = false)
-    public LocalDateTime startDateTime;
+    private LocalDateTime startDateTime;
 
     @Column(name = "end_date_time", nullable = false)
-    public LocalDateTime endDateTime;
+    private LocalDateTime endDateTime;
+
+    @Column(name = "reason", columnDefinition = "TEXT")
+    private String reason;
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public TreatmentEntity getTreatment() {
         return treatment;

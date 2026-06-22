@@ -5,6 +5,7 @@ import dev.qdule.application.dto.responses.UserResponse;
 import dev.qdule.application.exception.UserNotFoundException;
 import dev.qdule.application.mapper.UserMapper;
 import dev.qdule.domain.model.User;
+import dev.qdule.domain.repository.PasswordRepository;
 import dev.qdule.domain.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -13,10 +14,12 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class UserService {
     private UserRepository userRepository;
+    private PasswordRepository passwordRepository;
 
     @Inject
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordRepository passwordRepository) {
         this.userRepository = userRepository;
+        this.passwordRepository = passwordRepository;
     }
 
     public UserResponse findUserById(Long id) {
@@ -31,7 +34,7 @@ public class UserService {
     public UserResponse createUser(UserCreateRequest request) {
         User user = new User(
                 request.getName(),
-                request.getPassword(),
+                passwordRepository.hash(request.getPassword()),
                 request.getEmail()
                 // request.getRoles(),
                 // request.getStatus(),

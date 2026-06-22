@@ -1,45 +1,17 @@
-package dev.qdule.domain.model;
+package dev.qdule.application.dto.requests;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 
-public class Treatment {
-    private Long id;
+import dev.qdule.domain.model.TreatmentStatus;
+
+public class TreatmentUpdateRequest {
     private String name;
     private String description;
     private Duration duration;
     private BigDecimal price;
     private String imagePath;
     private TreatmentStatus status;
-
-    public Treatment(String name, String description, Duration duration, BigDecimal price, String imagePath,
-            TreatmentStatus status) {
-        this.name = name;
-        this.description = description;
-        this.duration = duration;
-        this.price = price;
-        this.imagePath = imagePath;
-        this.status = status;
-    }
-
-    public Treatment(Long id, String name, String description, Duration duration, BigDecimal price, String imagePath,
-            TreatmentStatus status) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.duration = duration;
-        this.price = price;
-        this.imagePath = imagePath;
-        this.status = status;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

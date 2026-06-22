@@ -1,9 +1,9 @@
-package dev.qdule.domain.model;
+package dev.qdule.application.dto.responses;
 
 import java.time.Duration;
 import java.time.LocalTime;
 
-public class Shift {
+public class ShiftResponse {
     private Long id;
     private String name;
     private LocalTime startTime;
@@ -12,21 +12,11 @@ public class Shift {
     private LocalTime breakStartTime;
     private LocalTime breakEndTime;
 
-    public Shift() {
+    public ShiftResponse() {
     }
 
-    public Shift(String name, LocalTime startTime, LocalTime endTime, Duration restTimeBetweenAppointments,
-            LocalTime breakStartTime, LocalTime breakEndTime) {
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.restTimeBetweenAppointments = restTimeBetweenAppointments;
-        this.breakStartTime = breakStartTime;
-        this.breakEndTime = breakEndTime;
-    }
-
-    public Shift(Long id, String name, LocalTime startTime, LocalTime endTime, Duration restTimeBetweenAppointments,
-            LocalTime breakStartTime, LocalTime breakEndTime) {
+    public ShiftResponse(Long id, String name, LocalTime startTime, LocalTime endTime,
+            Duration restTimeBetweenAppointments, LocalTime breakStartTime, LocalTime breakEndTime) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -91,5 +81,4 @@ public class Shift {
     public void setBreakEndTime(LocalTime breakEndTime) {
         this.breakEndTime = breakEndTime;
     }
-
 }
