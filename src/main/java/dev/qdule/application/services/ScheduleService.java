@@ -4,9 +4,15 @@ import dev.qdule.application.dto.requests.ScheduleCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ScheduleResponse;
+import dev.qdule.application.exception.ClientNotFoundException;
+import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.mapper.ScheduleMapper;
+import dev.qdule.domain.model.Client;
 import dev.qdule.domain.model.Schedule;
+import dev.qdule.domain.model.Treatment;
+import dev.qdule.domain.repository.ClientRepository;
 import dev.qdule.domain.repository.ScheduleRepository;
+import dev.qdule.domain.repository.TreatmentRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -14,10 +20,15 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class ScheduleService {
     private ScheduleRepository scheduleRepository;
+    private TreatmentRepository treatmentRepository;
+    private ClientRepository clientRepository;
 
     @Inject
-    public ScheduleService(ScheduleRepository scheduleRepository) {
+    public ScheduleService(ScheduleRepository scheduleRepository, TreatmentRepository treatmentRepository,
+            ClientRepository clientRepository) {
         this.scheduleRepository = scheduleRepository;
+        this.treatmentRepository = treatmentRepository;
+        this.clientRepository = clientRepository;
     }
 
     public PageResponse<ScheduleResponse> getSchedules(int page, int size) {
@@ -47,9 +58,14 @@ public class ScheduleService {
 
     @Transactional
     public ScheduleResponse createSchedule(ScheduleCreateRequest scheduleRequest) {
+        Treatment treatment = treatmentRepository.findById(scheduleRequest.getTreatmentId())
+                .orElseThrow(() -> new TreatmentNotFoundException(scheduleRequest.getTreatmentId()));
+        Client client = clientRepository.findById(scheduleRequest.getClientId())
+                .orElseThrow(() -> new ClientNotFoundException(scheduleRequest.getClientId()));
+
         Schedule schedule = new Schedule(
-                scheduleRequest.getTreatmentId(),
-                scheduleRequest.getClientId(),
+                treatment,
+                client,
                 scheduleRequest.getStartDateTime(),
                 scheduleRequest.getEndDateTime(),
                 scheduleRequest.getReason(),
@@ -65,8 +81,6 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
 
-        schedule.setTreatmentId(scheduleRequest.getTreatmentId());
-        schedule.setClientId(scheduleRequest.getClientId());
         schedule.setStartDateTime(scheduleRequest.getStartDateTime());
         schedule.setEndDateTime(scheduleRequest.getEndDateTime());
         schedule.setReason(scheduleRequest.getReason());

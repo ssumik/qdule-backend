@@ -7,7 +7,6 @@ import dev.qdule.application.exception.ScheduleNotFoundException;
 import dev.qdule.domain.model.Schedule;
 import dev.qdule.domain.repository.ScheduleRepository;
 import dev.qdule.infra.mapper.ScheduleEntityMapper;
-import dev.qdule.infra.persistence.entities.ScheduleEntity;
 import dev.qdule.infra.persistence.panache.ScheduleRepositoryPanache;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -30,11 +29,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
 
     @Override
     public Schedule save(Schedule schedule) {
-        ScheduleEntity scheduleEntity = scheduleRepositoryPanache.findById(schedule.getId());
-        if (scheduleEntity == null) {
-            scheduleEntity = new ScheduleEntity();
-        }
-        var entity = ScheduleEntityMapper.toEntity(schedule, scheduleEntity);
+        var entity = ScheduleEntityMapper.toEntity(schedule);
         var em = scheduleRepositoryPanache.getEntityManager();
         var merged = em.merge(entity);
         return ScheduleEntityMapper.toDomain(merged);
