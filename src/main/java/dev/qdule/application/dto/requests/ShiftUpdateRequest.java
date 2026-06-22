@@ -1,48 +1,15 @@
-package dev.qdule.domain.model;
+package dev.qdule.application.dto.requests;
 
 import java.time.Duration;
 import java.time.LocalTime;
 
-public class Shift {
-    private Long id;
+public class ShiftUpdateRequest {
     private String name;
     private LocalTime startTime;
     private LocalTime endTime;
     private Duration restTimeBetweenAppointments;
     private LocalTime breakStartTime;
     private LocalTime breakEndTime;
-
-    public Shift() {
-    }
-
-    public Shift(String name, LocalTime startTime, LocalTime endTime, Duration restTimeBetweenAppointments,
-            LocalTime breakStartTime, LocalTime breakEndTime) {
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.restTimeBetweenAppointments = restTimeBetweenAppointments;
-        this.breakStartTime = breakStartTime;
-        this.breakEndTime = breakEndTime;
-    }
-
-    public Shift(Long id, String name, LocalTime startTime, LocalTime endTime, Duration restTimeBetweenAppointments,
-            LocalTime breakStartTime, LocalTime breakEndTime) {
-        this.id = id;
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.restTimeBetweenAppointments = restTimeBetweenAppointments;
-        this.breakStartTime = breakStartTime;
-        this.breakEndTime = breakEndTime;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -91,5 +58,4 @@ public class Shift {
     public void setBreakEndTime(LocalTime breakEndTime) {
         this.breakEndTime = breakEndTime;
     }
-
 }

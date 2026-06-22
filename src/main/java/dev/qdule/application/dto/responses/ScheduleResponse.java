@@ -1,8 +1,10 @@
-package dev.qdule.domain.model;
+package dev.qdule.application.dto.responses;
 
 import java.time.LocalDateTime;
 
-public class Schedule {
+import dev.qdule.domain.model.ScheduleStatus;
+
+public class ScheduleResponse {
     private Long id;
     private Long treatmentId;
     private Long clientId;
@@ -11,21 +13,11 @@ public class Schedule {
     private String reason;
     private ScheduleStatus status;
 
-    public Schedule() {
+    public ScheduleResponse() {
     }
 
-    public Schedule(Long treatmentId, Long clientId, LocalDateTime startDateTime, LocalDateTime endDateTime,
-            String reason, ScheduleStatus status) {
-        this.treatmentId = treatmentId;
-        this.clientId = clientId;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-        this.reason = reason;
-        this.status = status;
-    }
-
-    public Schedule(Long id, Long treatmentId, Long clientId, LocalDateTime startDateTime, LocalDateTime endDateTime,
-            String reason, ScheduleStatus status) {
+    public ScheduleResponse(Long id, Long treatmentId, Long clientId, LocalDateTime startDateTime,
+            LocalDateTime endDateTime, String reason, ScheduleStatus status) {
         this.id = id;
         this.treatmentId = treatmentId;
         this.clientId = clientId;

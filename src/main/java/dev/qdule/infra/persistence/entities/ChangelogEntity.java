@@ -29,6 +29,14 @@ public class ChangelogEntity {
     @JoinColumn(name = "schedule_id", nullable = false)
     private ScheduleEntity schedule;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public LocalDateTime getDateTime() {
         return dateTime;
     }
