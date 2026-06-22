@@ -15,6 +15,14 @@ public class BcryptPasswordService implements PasswordRepository {
 
     @Override
     public boolean matches(String rawPassword, String hashedPassword) {
-        return BCrypt.checkpw(rawPassword, hashedPassword);
+        if (rawPassword == null || hashedPassword == null || hashedPassword.isBlank()) {
+            return false;
+        }
+
+        try {
+            return BCrypt.checkpw(rawPassword, hashedPassword);
+        } catch (IllegalArgumentException exception) {
+            return false;
+        }
     }
 }
