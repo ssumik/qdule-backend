@@ -4,6 +4,7 @@ import dev.qdule.application.dto.requests.ClientCreateRequest;
 import dev.qdule.application.dto.requests.ClientUpdateRequest;
 import dev.qdule.application.dto.responses.ClientResponse;
 import dev.qdule.application.services.ClientService;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -47,6 +48,7 @@ public class ClientResource {
 
     @GET
     @Path("/{id}")
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response findClientById(@PathParam("id") Long id) {
