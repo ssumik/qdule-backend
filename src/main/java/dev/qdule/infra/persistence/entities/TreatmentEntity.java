@@ -38,6 +38,9 @@ public class TreatmentEntity {
     @Enumerated(EnumType.STRING)
     private TreatmentStatus status;
 
+    @Column(name = "type", length = 100)
+    private String type;
+
     public TreatmentEntity() {
     }
 
@@ -50,6 +53,14 @@ public class TreatmentEntity {
         this.price = price;
         this.imagePath = imagePath;
         this.status = status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Long getId() {

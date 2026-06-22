@@ -1,18 +1,17 @@
 package dev.qdule.resources;
 
 import dev.qdule.application.dto.requests.TreatmentCreateRequest;
-import dev.qdule.application.dto.requests.UserCreateRequest;
+import dev.qdule.application.dto.requests.TreatmentUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.TreatmentResponse;
-import dev.qdule.application.dto.responses.UserResponse;
 import dev.qdule.application.services.TreatmentService;
-import dev.qdule.application.services.UserService;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -60,5 +59,14 @@ public class TreatmentResource {
     public Response deleteTreatmentById(@PathParam("id") Long id) {
         treatmentService.deleteTreatmentById(id);
         return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateTreatment(@PathParam("id") Long id, TreatmentUpdateRequest request) {
+        TreatmentResponse response = treatmentService.updateTreatment(id, request);
+        return Response.ok().entity(response).build();
     }
 }

@@ -1,6 +1,7 @@
 package dev.qdule.application.services;
 
 import dev.qdule.application.dto.requests.TreatmentCreateRequest;
+import dev.qdule.application.dto.requests.TreatmentUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.TreatmentResponse;
 import dev.qdule.application.mapper.TreatmentMapper;
@@ -64,6 +65,20 @@ public class TreatmentService {
         treatmentRepository.removeById(id);
     }
 
-    // TODO: FALTA ADICIONAR O PUT
+    @Transactional
+    public TreatmentResponse updateTreatment(Long id, TreatmentUpdateRequest treatmentRequest) {
+        Treatment treatment = treatmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Treatment not found"));
+
+        treatment.setName(treatmentRequest.getName());
+        treatment.setDescription(treatmentRequest.getDescription());
+        treatment.setDuration(treatmentRequest.getDuration());
+        treatment.setPrice(treatmentRequest.getPrice());
+        treatment.setImagePath(treatmentRequest.getImagePath());
+        treatment.setStatus(treatmentRequest.getStatus());
+
+        var savedTreatment = treatmentRepository.save(treatment);
+        return TreatmentMapper.toResponse(savedTreatment);
+    }
 
 }
