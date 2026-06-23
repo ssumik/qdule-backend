@@ -8,8 +8,8 @@ public class ScheduleMapper {
         ScheduleResponse response = new ScheduleResponse();
 
         response.setId(schedule.getId());
-        response.setTreatmentId(schedule.getTreatmentId());
-        response.setClientId(schedule.getClientId());
+        response.setTreatmentId(schedule.getTreatment().getId());
+        response.setClientId(schedule.getClient().getId());
         response.setStartDateTime(schedule.getStartDateTime());
         response.setEndDateTime(schedule.getEndDateTime());
         response.setReason(schedule.getReason());

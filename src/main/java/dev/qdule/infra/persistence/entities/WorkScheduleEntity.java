@@ -26,7 +26,7 @@ public class WorkScheduleEntity {
     private ShiftEntity shift;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "day_of_week", nullable = false)
+    @Column(name = "day_of_week", nullable = false, unique = true)
     private DayOfWeek dayOfWeek;
 
     public Long getId() {
