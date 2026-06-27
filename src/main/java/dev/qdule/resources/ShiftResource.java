@@ -18,6 +18,9 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
 @Path("/shifts")
 @Produces(MediaType.APPLICATION_JSON)
@@ -32,6 +35,14 @@ public class ShiftResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "200",
+        description = "Shifts list",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = PageResponse.class)
+        )
+    )
     public Response getShifts(@QueryParam("page") int page, @QueryParam("size") int size) {
         PageResponse<ShiftResponse> response = shiftService.getShifts(page, size);
         return Response.ok().entity(response).build();
@@ -41,6 +52,14 @@ public class ShiftResource {
     @Path("/{id}")
     @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "200",
+        description = "Shift details",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = ShiftResponse.class)
+        )
+    )
     public Response findShiftById(@PathParam("id") Long id) {
         ShiftResponse response = shiftService.getShiftById(id);
         return Response.ok().entity(response).build();
@@ -50,6 +69,14 @@ public class ShiftResource {
     @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "201",
+        description = "Shift created",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = ShiftResponse.class)
+        )
+    )
     public Response createShift(ShiftCreateRequest request) {
         ShiftResponse response = shiftService.createShift(request);
         return Response.status(Response.Status.CREATED)
@@ -62,6 +89,14 @@ public class ShiftResource {
     @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "200",
+        description = "Shift updated",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = ShiftResponse.class)
+        )
+    )
     public Response updateShift(@PathParam("id") Long id, ShiftUpdateRequest request) {
         ShiftResponse response = shiftService.updateShift(id, request);
         return Response.ok().entity(response).build();
@@ -70,6 +105,10 @@ public class ShiftResource {
     @DELETE
     @Authenticated
     @Path("/{id}")
+    @APIResponse(
+        responseCode = "204",
+        description = "Shift deleted"
+    )
     public Response deleteShiftById(@PathParam("id") Long id) {
         shiftService.deleteShiftById(id);
         return Response.noContent().build();

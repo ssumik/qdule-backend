@@ -13,6 +13,9 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -29,6 +32,14 @@ public class UserResource {
     @Path("/{id}")
     @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "200",
+        description = "User details",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = UserResponse.class)
+        )
+    )
     public Response findUserById(@PathParam("id") Long id) {
         UserResponse response = userService.findUserById(id);
 
@@ -38,6 +49,14 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "201",
+        description = "User created",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = UserResponse.class)
+        )
+    )
     public Response createUser(UserCreateRequest request) {
         UserResponse response = userService.createUser(request);
         return Response.status(Response.Status.CREATED)
