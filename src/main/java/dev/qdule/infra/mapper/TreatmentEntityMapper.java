@@ -12,7 +12,9 @@ public class TreatmentEntityMapper {
                 entity.getDuration(),
                 entity.getPrice(),
                 entity.getImagePath(),
-                entity.getStatus());
+                entity.getStatus(),
+                entity.getType()
+            );
     }
 
     public static TreatmentEntity toEntity(Treatment treatment) {
@@ -25,6 +27,7 @@ public class TreatmentEntityMapper {
         entity.setPrice(treatment.getPrice());
         entity.setImagePath(treatment.getImagePath());
         entity.setStatus(treatment.getStatus());
+        entity.setType(treatment.getType());
 
         return entity;
     }

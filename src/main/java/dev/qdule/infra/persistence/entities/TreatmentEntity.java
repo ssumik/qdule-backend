@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 
 import dev.qdule.domain.model.TreatmentStatus;
+import dev.qdule.domain.model.TreatmentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,13 +40,13 @@ public class TreatmentEntity {
     private TreatmentStatus status;
 
     @Column(name = "type", length = 100)
-    private String type;
+    private TreatmentType type;
 
     public TreatmentEntity() {
     }
 
     public TreatmentEntity(Long id, String name, String description, Duration duration, BigDecimal price,
-            String imagePath, TreatmentStatus status) {
+            String imagePath, TreatmentStatus status,TreatmentType type) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -53,13 +54,14 @@ public class TreatmentEntity {
         this.price = price;
         this.imagePath = imagePath;
         this.status = status;
+        this.type = type;
     }
 
-    public String getType() {
+    public TreatmentType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(TreatmentType type) {
         this.type = type;
     }
 

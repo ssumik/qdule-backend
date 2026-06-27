@@ -5,6 +5,7 @@ import dev.qdule.application.dto.requests.TreatmentUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.TreatmentResponse;
 import dev.qdule.application.services.TreatmentService;
+import dev.qdule.domain.model.TreatmentType;
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -43,8 +44,12 @@ public class TreatmentResource {
             schema = @Schema(implementation = PageResponse.class)
         )
     )
-    public Response getTreatments(@QueryParam("page") int page, @QueryParam("size") int size) {
-        PageResponse<TreatmentResponse> response = treatmentService.getTreatments(page, size);
+    public Response getTreatments(
+        @QueryParam("page") int page,
+        @QueryParam("size") int size,
+        @QueryParam("type") TreatmentType type
+    ) {
+        PageResponse<TreatmentResponse> response = treatmentService.getTreatments(page, size, type);
         return Response.ok().entity(response).build();
     }
 

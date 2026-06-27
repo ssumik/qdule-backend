@@ -7,7 +7,7 @@ public class PageResponse<T> {
     private int page;
     private int size;
     private long totalElements;
-    private int totalPages;
+    private long totalPages;
 
     public List<T> getContent() {
         return content;
@@ -41,11 +41,11 @@ public class PageResponse<T> {
         this.totalElements = totalElements;
     }
 
-    public int getTotalPages() {
+    public long getTotalPages() {
         return totalPages;
     }
 
-    public void setTotalPages(int totalPages) {
+    public void setTotalPages(long totalPages) {
         this.totalPages = totalPages;
     }
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 
 import dev.qdule.domain.model.TreatmentStatus;
+import dev.qdule.domain.model.TreatmentType;
 
 public class TreatmentCreateRequest {
     private String name;
@@ -12,6 +13,7 @@ public class TreatmentCreateRequest {
     private BigDecimal price;
     private String imagePath;
     private TreatmentStatus status;
+    private TreatmentType type;
 
     public String getName() {
         return name;
@@ -59,5 +61,13 @@ public class TreatmentCreateRequest {
 
     public void setStatus(TreatmentStatus status) {
         this.status = status;
+    }
+
+    public TreatmentType getType() {
+        return type;
+    }
+
+    public void setType(TreatmentType type) {
+        this.type = type;
     }
 }

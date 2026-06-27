@@ -15,6 +15,7 @@ public class TreatmentMapper {
         response.setPrice(treatment.getPrice());
         response.setImagePath(treatment.getImagePath());
         response.setStatus(treatment.getStatus());
+        response.setType(treatment.getType());
 
         return response;
     }

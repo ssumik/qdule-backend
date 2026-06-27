@@ -7,6 +7,7 @@ import dev.qdule.application.dto.responses.TreatmentResponse;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.mapper.TreatmentMapper;
 import dev.qdule.domain.model.Treatment;
+import dev.qdule.domain.model.TreatmentType;
 import dev.qdule.domain.repository.TreatmentRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -21,10 +22,19 @@ public class TreatmentService {
         this.treatmentRepository = treatmentRepository;
     }
 
-    public PageResponse<TreatmentResponse> getTreatments(int page, int size) {
-        var treatmentList = treatmentRepository.findAll(page, size);
+    public PageResponse<TreatmentResponse> getTreatments(int page, int size,TreatmentType type) {
+        // DEPENDENDO DE COMO FOR FICANDO, DEVE TROCAR PARA LOGICA DE FILTRO USANDO OBJETOS
+        PageResponse<Treatment> treatmentList;
+        if (type == null){
+            treatmentList = treatmentRepository.findAll(page, size);
+        }else {
+            treatmentList = treatmentRepository.findAllByType(page, size, type);
+        }
 
         PageResponse<TreatmentResponse> response = new PageResponse<>();
+
+        System.out.println(treatmentList.getContent()
+                        .stream().count());
 
         response.setContent(
                 treatmentList.getContent()
@@ -54,7 +64,9 @@ public class TreatmentService {
                 treatmentRequest.getDuration(),
                 treatmentRequest.getPrice(),
                 treatmentRequest.getImagePath(),
-                treatmentRequest.getStatus());
+                treatmentRequest.getStatus(),
+                treatmentRequest.getType()
+            );
 
         var savedTreatment = treatmentRepository.save(treatment);
 
