@@ -7,7 +7,6 @@ import dev.qdule.application.exception.WorkScheduleNotFoundException;
 import dev.qdule.domain.model.WorkSchedule;
 import dev.qdule.domain.repository.WorkScheduleRepository;
 import dev.qdule.infra.mapper.WorkScheduleEntityMapper;
-import dev.qdule.infra.persistence.entities.WorkScheduleEntity;
 import dev.qdule.infra.persistence.panache.WorkScheduleRepositoryPanache;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
