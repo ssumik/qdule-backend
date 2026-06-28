@@ -8,8 +8,9 @@ public class WorkScheduleMapper {
         WorkScheduleResponse response = new WorkScheduleResponse();
 
         response.setId(workSchedule.getId());
-        response.setShift(workSchedule.getShift());
+        response.setShift(workSchedule.getShift().getId());
         response.setDayOfWeek(workSchedule.getDayOfWeek());
+        response.setStatus(workSchedule.getStatus());
 
         return response;
     }

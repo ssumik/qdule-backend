@@ -76,6 +76,9 @@ public class ScheduleService {
         Client client = clientRepository.findById(scheduleRequest.getClientId())
                 .orElseThrow(() -> new ClientNotFoundException(scheduleRequest.getClientId()));
 
+        // TODO: VALIDAR SE O SCHEDULE ESTA SENDO EM UM DIA LIVRE
+        // TODO: VALIDAR SE JA EXISTE ALGO PARA ESTE HORARIO QUE SERIA CONFLITANTE
+
         Schedule schedule = new Schedule(
                 treatment,
                 client,

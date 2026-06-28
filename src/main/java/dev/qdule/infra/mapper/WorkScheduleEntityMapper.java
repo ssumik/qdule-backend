@@ -8,7 +8,8 @@ public class WorkScheduleEntityMapper {
         return new WorkSchedule(
                 entity.getId(),
                 ShiftEntityMapper.toDomain(entity.getShift()),
-                entity.getDayOfWeek());
+                entity.getDayOfWeek(),
+                entity.getStatus());
     }
 
     public static WorkScheduleEntity toEntity(WorkSchedule workSchedule) {
@@ -16,6 +17,7 @@ public class WorkScheduleEntityMapper {
         entity.setDayOfWeek(workSchedule.getDayOfWeek());
         entity.setId(workSchedule.getId());
         entity.setShift(ShiftEntityMapper.toEntity(workSchedule.getShift()));
+        entity.setStatus(workSchedule.getStatus());
         return entity;
     }
 }

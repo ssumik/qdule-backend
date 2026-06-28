@@ -14,6 +14,8 @@ import jakarta.persistence.Table;
 
 import java.time.DayOfWeek;
 
+import dev.qdule.domain.model.WorkScheduleStatus;
+
 @Entity
 @Table(name = "work_schedules")
 public class WorkScheduleEntity {
@@ -28,6 +30,10 @@ public class WorkScheduleEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "day_of_week", nullable = false, unique = true)
     private DayOfWeek dayOfWeek;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private WorkScheduleStatus status;
 
     public Long getId() {
         return id;
@@ -51,5 +57,13 @@ public class WorkScheduleEntity {
 
     public void setDayOfWeek(DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
+    }
+
+    public WorkScheduleStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(WorkScheduleStatus status) {
+        this.status = status;
     }
 }

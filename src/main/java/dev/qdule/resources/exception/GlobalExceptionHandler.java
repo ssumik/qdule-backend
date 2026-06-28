@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 
 import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.application.exception.ConflictException;
+import dev.qdule.application.exception.ShiftNotFoundException;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.exception.UserNotFoundException;
 import io.quarkus.logging.Log;
@@ -11,6 +12,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
+// TODO: ADICIONAR EXCEPTIONS FALTANTES
 @Provider
 public class GlobalExceptionHandler
         implements ExceptionMapper<Exception> {
@@ -51,6 +53,15 @@ public class GlobalExceptionHandler
                     exception.getMessage(),
                     ZonedDateTime.now());
             Log.warn("Treatment not found: " + exception.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(error).build();
+        }
+
+        if (exception instanceof ShiftNotFoundException) {
+            ErrorResponse error = new ErrorResponse(
+                    Response.Status.NOT_FOUND.getStatusCode(),
+                    exception.getMessage(),
+                    ZonedDateTime.now());
+            Log.warn("Shift not found: " + exception.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(error).build();
         }
 
