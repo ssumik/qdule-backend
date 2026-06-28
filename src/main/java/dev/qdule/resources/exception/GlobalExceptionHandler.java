@@ -6,6 +6,7 @@ import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.ShiftDisabledException;
 import dev.qdule.application.exception.ShiftNotFoundException;
+import dev.qdule.application.exception.TreatmentDisabledException;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.exception.UserNotFoundException;
 import io.quarkus.logging.Log;
@@ -72,7 +73,16 @@ public class GlobalExceptionHandler
                     exception.getMessage(),
                     ZonedDateTime.now());
             Log.warn("Shift not found: " + exception.getMessage());
-            return Response.status(Response.Status.NOT_FOUND).entity(error).build();
+            return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(error).build();
+        }
+
+        if (exception instanceof TreatmentDisabledException) {
+            ErrorResponse error = new ErrorResponse(
+                    Response.Status.METHOD_NOT_ALLOWED.getStatusCode(),
+                    exception.getMessage(),
+                    ZonedDateTime.now());
+            Log.warn("Shift not found: " + exception.getMessage());
+            return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(error).build();
         }
 
         ErrorResponse error = new ErrorResponse(
