@@ -16,7 +16,7 @@ public class UnauthorizedExceptionHandler implements ExceptionMapper<Unauthorize
                 .entity(new ErrorResponse(
                         401,
                         "Token ausente ou inválido",
-                        java.time.ZonedDateTime.now()))
+                        java.time.LocalDateTime.now()))
                 .build();
     }
 }
