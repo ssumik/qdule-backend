@@ -1,9 +1,12 @@
 package dev.qdule.application.services;
 
+import java.util.ArrayList;
+
 import dev.qdule.application.dto.requests.ShiftCreateRequest;
 import dev.qdule.application.dto.requests.ShiftUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ShiftResponse;
+import dev.qdule.application.mapper.ShiftBreakMapper;
 import dev.qdule.application.mapper.ShiftMapper;
 import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.model.ShiftBreak;
@@ -54,9 +57,7 @@ public class ShiftService {
                 shiftRequest.getEndTime(),
                 shiftRequest.getRestTimeBetweenAppointments(),
                 shiftRequest.getBreaks().stream()
-                        .map(shiftBreak -> new ShiftBreak(
-                                shiftBreak.getStartTime(),
-                                shiftBreak.getEndTime()))
+                        .map(ShiftBreakMapper::toDomain)
                         .toList());
 
         var savedShift = shiftRepository.save(shift);
@@ -74,9 +75,7 @@ public class ShiftService {
         shift.setEndTime(shiftRequest.getEndTime());
         shift.setRestTimeBetweenAppointments(shiftRequest.getRestTimeBetweenAppointments());
         shift.setBreaks(shiftRequest.getBreaks().stream()
-                .map(shiftBreak -> new ShiftBreak(
-                        shiftBreak.getStartTime(),
-                        shiftBreak.getEndTime()))
+                .map(ShiftBreakMapper::toDomain)
                 .toList());
 
         var savedShift = shiftRepository.save(shift);
