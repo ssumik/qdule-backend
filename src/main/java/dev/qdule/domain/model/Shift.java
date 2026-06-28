@@ -68,6 +68,7 @@ public class Shift {
         this.name = name;
     }
 
+    // TODO: VALIDAR SE PRECISA SER ALTERADO PARA VALOR COM TIMEZONE
     public LocalTime getStartTime() {
         return startTime;
     }

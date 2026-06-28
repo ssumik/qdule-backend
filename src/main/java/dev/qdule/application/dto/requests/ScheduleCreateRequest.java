@@ -1,5 +1,6 @@
 package dev.qdule.application.dto.requests;
 
+import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 
 import dev.qdule.domain.model.ScheduleStatus;
@@ -11,6 +12,7 @@ public class ScheduleCreateRequest {
     private ZonedDateTime endDateTime;
     private String reason;
     private ScheduleStatus status;
+    private DayOfWeek dayOfWeek;
 
     public Long getTreatmentId() {
         return treatmentId;
@@ -58,5 +60,13 @@ public class ScheduleCreateRequest {
 
     public void setStatus(ScheduleStatus status) {
         this.status = status;
+    }
+
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 }

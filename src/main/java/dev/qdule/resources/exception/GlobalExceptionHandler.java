@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 
 import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.application.exception.ConflictException;
+import dev.qdule.application.exception.ShiftDisabledException;
 import dev.qdule.application.exception.ShiftNotFoundException;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.exception.UserNotFoundException;
@@ -59,6 +60,15 @@ public class GlobalExceptionHandler
         if (exception instanceof ShiftNotFoundException) {
             ErrorResponse error = new ErrorResponse(
                     Response.Status.NOT_FOUND.getStatusCode(),
+                    exception.getMessage(),
+                    ZonedDateTime.now());
+            Log.warn("Shift not found: " + exception.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(error).build();
+        }
+
+        if (exception instanceof ShiftDisabledException) {
+            ErrorResponse error = new ErrorResponse(
+                    Response.Status.METHOD_NOT_ALLOWED.getStatusCode(),
                     exception.getMessage(),
                     ZonedDateTime.now());
             Log.warn("Shift not found: " + exception.getMessage());
