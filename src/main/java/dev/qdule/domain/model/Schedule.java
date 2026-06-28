@@ -1,20 +1,20 @@
 package dev.qdule.domain.model;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 public class Schedule {
     private Long id;
     private Treatment treatmentId;
     private Client clientId;
-    private ZonedDateTime startDateTime;
-    private ZonedDateTime endDateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     private String reason;
     private ScheduleStatus status;
 
     public Schedule() {
     }
 
-    public Schedule(Treatment treatmentId, Client clientId, ZonedDateTime startDateTime, ZonedDateTime endDateTime,
+    public Schedule(Treatment treatmentId, Client clientId, LocalDateTime startDateTime, LocalDateTime endDateTime,
             String reason, ScheduleStatus status) {
         this.treatmentId = treatmentId;
         this.clientId = clientId;
@@ -24,8 +24,8 @@ public class Schedule {
         this.status = status;
     }
 
-    public Schedule(Long id, Treatment treatmentId, Client clientId, ZonedDateTime startDateTime,
-            ZonedDateTime endDateTime,
+    public Schedule(Long id, Treatment treatmentId, Client clientId, LocalDateTime startDateTime,
+            LocalDateTime endDateTime,
             String reason, ScheduleStatus status) {
         this.id = id;
         this.treatmentId = treatmentId;
@@ -60,19 +60,19 @@ public class Schedule {
         this.clientId = clientId;
     }
 
-    public ZonedDateTime getStartDateTime() {
+    public LocalDateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(ZonedDateTime startDateTime) {
+    public void setStartDateTime(LocalDateTime startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public ZonedDateTime getEndDateTime() {
+    public LocalDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(ZonedDateTime endDateTime) {
+    public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 

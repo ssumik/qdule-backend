@@ -1,5 +1,10 @@
 package dev.qdule.application.services;
 
+import java.util.Comparator;
+import java.util.List;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import dev.qdule.application.dto.requests.ShiftCreateRequest;
 import dev.qdule.application.dto.requests.ShiftUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
@@ -9,6 +14,7 @@ import dev.qdule.application.exception.ShiftNotFoundException;
 import dev.qdule.application.mapper.ShiftBreakMapper;
 import dev.qdule.application.mapper.ShiftMapper;
 import dev.qdule.domain.model.Shift;
+import dev.qdule.domain.model.ShiftBreak;
 import dev.qdule.domain.model.ShiftStatus;
 import dev.qdule.domain.repository.ShiftRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -56,20 +62,64 @@ public class ShiftService {
                     throw new ConflictException("There is already a shift set for this day");
                 });
 
+        var breaks = shiftRequest.getBreaks().stream()
+                .map(ShiftBreakMapper::toDomain)
+                .toList();
+
+        validateBreaks(breaks, shiftRequest.getStartTime(), shiftRequest.getEndTime());
+
         Shift shift = new Shift(
                 shiftRequest.getName(),
                 shiftRequest.getStartTime(),
                 shiftRequest.getEndTime(),
                 shiftRequest.getRestTimeBetweenAppointments(),
-                shiftRequest.getBreaks().stream()
-                        .map(ShiftBreakMapper::toDomain)
-                        .toList(),
+                breaks,
                 shiftRequest.getDayOfWeek(),
                 resolveStatus(shiftRequest.getStatus()));
 
         var savedShift = shiftRepository.save(shift);
 
         return ShiftMapper.toResponse(savedShift);
+    }
+
+    private void validateBreaks(List<ShiftBreak> breaks, LocalTime shiftStartTime, LocalTime shiftEndTime) {
+        if (breaks == null || breaks.isEmpty()) {
+            return;
+        }
+
+        var sortedBreaks = breaks.stream()
+                .peek(shiftBreak -> validateBreakRange(shiftBreak, shiftStartTime, shiftEndTime))
+                .sorted(Comparator.comparing(ShiftBreak::getStartTime))
+                .toList();
+
+        for (int index = 1; index < sortedBreaks.size(); index++) {
+            ShiftBreak previous = sortedBreaks.get(index - 1);
+            ShiftBreak current = sortedBreaks.get(index);
+
+            if (current.getStartTime().isBefore(previous.getEndTime())) {
+                throw new ConflictException("Shift breaks cannot overlap");
+            }
+        }
+    }
+
+    private void validateBreakRange(ShiftBreak shiftBreak, LocalTime shiftStartTime, LocalTime shiftEndTime) {
+        if (shiftBreak.getStartTime() == null || shiftBreak.getEndTime() == null) {
+            throw new ConflictException("Shift break start time and end time are required");
+        }
+
+        if (!shiftBreak.getStartTime().isBefore(shiftBreak.getEndTime())) {
+            throw new ConflictException(
+                    "Shift break start time must be before end time");
+        }
+
+        if (shiftStartTime == null || shiftEndTime == null) {
+            throw new ConflictException("Shift start time and end time are required");
+        }
+
+        if (shiftBreak.getStartTime().isBefore(shiftStartTime)
+                || shiftBreak.getEndTime().isAfter(shiftEndTime)) {
+            throw new ConflictException("Shift breaks must be inside shift start time and end time");
+        }
     }
 
     @Transactional
@@ -88,6 +138,8 @@ public class ShiftService {
         if (shiftRequest.getStatus() != null) {
             shift.setStatus(shiftRequest.getStatus());
         }
+
+        validateBreaks(shift.getBreaks(), shift.getStartTime(), shift.getEndTime());
 
         var savedShift = shiftRepository.save(shift);
         return ShiftMapper.toResponse(savedShift);

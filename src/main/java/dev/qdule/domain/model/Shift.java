@@ -3,6 +3,7 @@ package dev.qdule.domain.model;
 import java.time.Duration;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +36,14 @@ public class Shift {
         this.status = status;
     }
 
-    public Shift(Long id, String name, LocalTime startTime, LocalTime endTime, Duration restTimeBetweenAppointments,
+    public Shift(Long id, String name, LocalTime startTime, LocalTime endTime,
+            Duration restTimeBetweenAppointments,
             List<ShiftBreak> breaks) {
         this(id, name, startTime, endTime, restTimeBetweenAppointments, breaks, null, ShiftStatus.ENABLED);
     }
 
-    public Shift(Long id, String name, LocalTime startTime, LocalTime endTime, Duration restTimeBetweenAppointments,
+    public Shift(Long id, String name, LocalTime startTime, LocalTime endTime,
+            Duration restTimeBetweenAppointments,
             List<ShiftBreak> breaks, DayOfWeek dayOfWeek, ShiftStatus status) {
         this.id = id;
         this.name = name;
@@ -68,6 +71,7 @@ public class Shift {
         this.name = name;
     }
 
+    // TODO: VALIDAR SE PRECISA SER ALTERADO PARA VALOR COM TIMEZONE
     public LocalTime getStartTime() {
         return startTime;
     }

@@ -8,12 +8,10 @@ import java.util.Optional;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.ShiftNotFoundException;
-import dev.qdule.application.mapper.ShiftMapper;
 import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.model.ShiftBreak;
 import dev.qdule.domain.repository.ShiftRepository;
 import dev.qdule.infra.mapper.ShiftEntityMapper;
-import dev.qdule.infra.mapper.UserEntityMapper;
 import dev.qdule.infra.persistence.panache.ShiftRepositoryPanache;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -36,43 +34,10 @@ public class ShiftRepositoryImpl implements ShiftRepository {
 
     @Override
     public Shift save(Shift shift) {
-        validateBreaks(shift.getBreaks());
         var entity = ShiftEntityMapper.toEntity(shift);
         var em = shiftRepositoryPanache.getEntityManager();
         var merged = em.merge(entity);
         return ShiftEntityMapper.toDomain(merged);
-    }
-
-    // TODO: VALIDAR SE FAZ SENTIDO MANTER DESTA FORMA
-    private void validateBreaks(List<ShiftBreak> breaks) {
-        if (breaks == null || breaks.isEmpty()) {
-            return;
-        }
-
-        var sortedBreaks = breaks.stream()
-                .peek(this::validateBreakRange)
-                .sorted(Comparator.comparing(ShiftBreak::getStartTime))
-                .toList();
-
-        for (int index = 1; index < sortedBreaks.size(); index++) {
-            ShiftBreak previous = sortedBreaks.get(index - 1);
-            ShiftBreak current = sortedBreaks.get(index);
-
-            if (current.getStartTime().isBefore(previous.getEndTime())) {
-                throw new ConflictException("Shift breaks cannot overlap");
-            }
-        }
-    }
-
-    private void validateBreakRange(ShiftBreak shiftBreak) {
-        if (shiftBreak.getStartTime() == null || shiftBreak.getEndTime() == null) {
-            throw new ConflictException("Shift break start time and end time are required");
-        }
-
-        if (!shiftBreak.getStartTime().isBefore(shiftBreak.getEndTime())) {
-            throw new ConflictException(
-                    "Shift break start time must be before end time");
-        }
     }
 
     @Override

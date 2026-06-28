@@ -1,8 +1,8 @@
 package dev.qdule.application.dto.requests;
 
 import java.time.Duration;
-import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package dev.qdule.infra.persistence.repository;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,8 +51,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     public PageResponse<Schedule> findAll(
             int page,
             int size,
-            ZonedDateTime start,
-            ZonedDateTime end,
+            LocalDateTime start,
+            LocalDateTime end,
             ScheduleStatus status) {
         var pageResponse = new PageResponse<Schedule>();
 

@@ -20,6 +20,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
@@ -52,8 +53,8 @@ public class ScheduleResource {
     public Response getSchedules(
             @Parameter(required = true) @QueryParam("page") int page,
             @Parameter(required = true) @QueryParam("size") int size,
-            @QueryParam("start") ZonedDateTime start,
-            @QueryParam("end") ZonedDateTime end,
+            @QueryParam("start") LocalDateTime start,
+            @QueryParam("end") LocalDateTime end,
             @QueryParam("status") ScheduleStatus status) {
         PageResponse<ScheduleResponse> response = scheduleService.getSchedules(
                 page,
