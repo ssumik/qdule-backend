@@ -6,26 +6,26 @@ public class WorkSchedule {
     private Long id;
     private Shift shift;
     private DayOfWeek dayOfWeek;
-    private WorkScheduleStatus status;
+    private ShiftStatus status;
 
     public WorkSchedule() {
     }
 
     public WorkSchedule(Shift shift, DayOfWeek dayOfWeek) {
-        this(shift, dayOfWeek, WorkScheduleStatus.ENABLED);
+        this(shift, dayOfWeek, ShiftStatus.ENABLED);
     }
 
-    public WorkSchedule(Shift shift, DayOfWeek dayOfWeek, WorkScheduleStatus status) {
+    public WorkSchedule(Shift shift, DayOfWeek dayOfWeek, ShiftStatus status) {
         this.shift = shift;
         this.dayOfWeek = dayOfWeek;
         this.status = status;
     }
 
     public WorkSchedule(Long id, Shift shift, DayOfWeek dayOfWeek) {
-        this(id, shift, dayOfWeek, WorkScheduleStatus.ENABLED);
+        this(id, shift, dayOfWeek, ShiftStatus.ENABLED);
     }
 
-    public WorkSchedule(Long id, Shift shift, DayOfWeek dayOfWeek, WorkScheduleStatus status) {
+    public WorkSchedule(Long id, Shift shift, DayOfWeek dayOfWeek, ShiftStatus status) {
         this.id = id;
         this.shift = shift;
         this.dayOfWeek = dayOfWeek;
@@ -56,11 +56,11 @@ public class WorkSchedule {
         this.dayOfWeek = dayOfWeek;
     }
 
-    public WorkScheduleStatus getStatus() {
+    public ShiftStatus getStatus() {
         return status;
     }
 
-    public void setStatus(WorkScheduleStatus status) {
+    public void setStatus(ShiftStatus status) {
         this.status = status;
     }
 }
