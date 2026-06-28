@@ -1,23 +1,23 @@
 package dev.qdule.domain.model;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class Changelog {
     private Long id;
-    private LocalDateTime dateTime;
+    private ZonedDateTime dateTime;
     private String description;
     private Long scheduleId;
 
     public Changelog() {
     }
 
-    public Changelog(LocalDateTime dateTime, String description, Long scheduleId) {
+    public Changelog(ZonedDateTime dateTime, String description, Long scheduleId) {
         this.dateTime = dateTime;
         this.description = description;
         this.scheduleId = scheduleId;
     }
 
-    public Changelog(Long id, LocalDateTime dateTime, String description, Long scheduleId) {
+    public Changelog(Long id, ZonedDateTime dateTime, String description, Long scheduleId) {
         this.id = id;
         this.dateTime = dateTime;
         this.description = description;
@@ -32,11 +32,11 @@ public class Changelog {
         this.id = id;
     }
 
-    public LocalDateTime getDateTime() {
+    public ZonedDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
     }
 

@@ -1,12 +1,16 @@
 package dev.qdule.infra.persistence.entities;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.time.Duration;
@@ -30,11 +34,8 @@ public class ShiftEntity {
     @Column(name = "rest_time_between_appointments")
     private Duration restTimeBetweenAppointments;
 
-    @Column(name = "break_start_time")
-    private LocalTime breakStartTime;
-
-    @Column(name = "break_end_time")
-    private LocalTime breakEndTime;
+    @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ShiftBreakEntity> breaks = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -76,19 +77,12 @@ public class ShiftEntity {
         this.restTimeBetweenAppointments = restTimeBetweenAppointments;
     }
 
-    public LocalTime getBreakStartTime() {
-        return breakStartTime;
+    public List<ShiftBreakEntity> getBreaks() {
+        return breaks;
     }
 
-    public void setBreakStartTime(LocalTime breakStartTime) {
-        this.breakStartTime = breakStartTime;
+    public void setBreaks(List<ShiftBreakEntity> breaks) {
+        this.breaks = breaks == null ? new ArrayList<>() : breaks;
     }
 
-    public LocalTime getBreakEndTime() {
-        return breakEndTime;
-    }
-
-    public void setBreakEndTime(LocalTime breakEndTime) {
-        this.breakEndTime = breakEndTime;
-    }
 }

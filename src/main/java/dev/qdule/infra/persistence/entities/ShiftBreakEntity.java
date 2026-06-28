@@ -1,9 +1,9 @@
 package dev.qdule.infra.persistence.entities;
 
+import java.time.LocalTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,28 +12,22 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import java.time.DayOfWeek;
-
-import dev.qdule.domain.model.WorkScheduleStatus;
-
 @Entity
-@Table(name = "work_schedules")
-public class WorkScheduleEntity {
+@Table(name = "shift_breaks")
+public class ShiftBreakEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "shift_id", nullable = false)
+    @JoinColumn(name = "shift_id")
     private ShiftEntity shift;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "day_of_week", nullable = false, unique = true)
-    private DayOfWeek dayOfWeek;
+    @Column(name = "start_time", nullable = false)
+    private LocalTime startTime;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private WorkScheduleStatus status;
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
 
     public Long getId() {
         return id;
@@ -51,19 +45,20 @@ public class WorkScheduleEntity {
         this.shift = shift;
     }
 
-    public DayOfWeek getDayOfWeek() {
-        return dayOfWeek;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public void setDayOfWeek(DayOfWeek dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
     }
 
-    public WorkScheduleStatus getStatus() {
-        return status;
+    public LocalTime getEndTime() {
+        return endTime;
     }
 
-    public void setStatus(WorkScheduleStatus status) {
-        this.status = status;
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
+
 }

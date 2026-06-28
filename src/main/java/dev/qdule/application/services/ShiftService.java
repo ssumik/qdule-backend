@@ -1,11 +1,15 @@
 package dev.qdule.application.services;
 
+import java.util.ArrayList;
+
 import dev.qdule.application.dto.requests.ShiftCreateRequest;
 import dev.qdule.application.dto.requests.ShiftUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ShiftResponse;
+import dev.qdule.application.mapper.ShiftBreakMapper;
 import dev.qdule.application.mapper.ShiftMapper;
 import dev.qdule.domain.model.Shift;
+import dev.qdule.domain.model.ShiftBreak;
 import dev.qdule.domain.repository.ShiftRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -52,8 +56,9 @@ public class ShiftService {
                 shiftRequest.getStartTime(),
                 shiftRequest.getEndTime(),
                 shiftRequest.getRestTimeBetweenAppointments(),
-                shiftRequest.getBreakStartTime(),
-                shiftRequest.getBreakEndTime());
+                shiftRequest.getBreaks().stream()
+                        .map(ShiftBreakMapper::toDomain)
+                        .toList());
 
         var savedShift = shiftRepository.save(shift);
 
@@ -69,8 +74,9 @@ public class ShiftService {
         shift.setStartTime(shiftRequest.getStartTime());
         shift.setEndTime(shiftRequest.getEndTime());
         shift.setRestTimeBetweenAppointments(shiftRequest.getRestTimeBetweenAppointments());
-        shift.setBreakStartTime(shiftRequest.getBreakStartTime());
-        shift.setBreakEndTime(shiftRequest.getBreakEndTime());
+        shift.setBreaks(shiftRequest.getBreaks().stream()
+                .map(ShiftBreakMapper::toDomain)
+                .toList());
 
         var savedShift = shiftRepository.save(shift);
         return ShiftMapper.toResponse(savedShift);

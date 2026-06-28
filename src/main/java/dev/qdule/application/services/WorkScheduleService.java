@@ -9,6 +9,7 @@ import dev.qdule.application.exception.WorkScheduleNotFoundException;
 import dev.qdule.application.mapper.WorkScheduleMapper;
 import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.model.WorkSchedule;
+import dev.qdule.domain.model.WorkScheduleStatus;
 import dev.qdule.domain.repository.ShiftRepository;
 import dev.qdule.domain.repository.WorkScheduleRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -57,7 +58,8 @@ public class WorkScheduleService {
                 .orElseThrow(() -> new ShiftNotFoundException(workScheduleRequest.getShiftId()));
         WorkSchedule workSchedule = new WorkSchedule(
                 shift,
-                workScheduleRequest.getDayOfWeek());
+                workScheduleRequest.getDayOfWeek(),
+                workScheduleRequest.getStatus());
 
         var savedWorkSchedule = workScheduleRepository.save(workSchedule);
 
@@ -74,6 +76,7 @@ public class WorkScheduleService {
 
         workSchedule.setShift(shift);
         workSchedule.setDayOfWeek(workScheduleRequest.getDayOfWeek());
+        workSchedule.setStatus(workScheduleRequest.getStatus());
 
         var savedWorkSchedule = workScheduleRepository.save(workSchedule);
         return WorkScheduleMapper.toResponse(savedWorkSchedule);

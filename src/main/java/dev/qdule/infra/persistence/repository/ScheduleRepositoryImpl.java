@@ -1,10 +1,14 @@
 package dev.qdule.infra.persistence.repository;
 
+import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.exception.ScheduleNotFoundException;
 import dev.qdule.domain.model.Schedule;
+import dev.qdule.domain.model.ScheduleStatus;
 import dev.qdule.domain.repository.ScheduleRepository;
 import dev.qdule.infra.mapper.ScheduleEntityMapper;
 import dev.qdule.infra.persistence.panache.ScheduleRepositoryPanache;
@@ -43,25 +47,56 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     }
 
     @Override
-    public PageResponse<Schedule> findAll(int page, int size) {
+    public PageResponse<Schedule> findAll(
+            int page,
+            int size,
+            ZonedDateTime start,
+            ZonedDateTime end,
+            ScheduleStatus status) {
         var pageResponse = new PageResponse<Schedule>();
 
+        Map<String, Object> parameters = new HashMap<>();
+        String query = "";
+
+        if (start != null && end != null) {
+            query = addToQuery(query, " startDateTime < :end and endDateTime > :start");
+            parameters.put("start", start);
+            parameters.put("end", end);
+        }
+
+        if (status != null) {
+            query = addToQuery(query, " status = :status");
+            parameters.put("status", status);
+        }
+
         pageResponse.setContent(scheduleRepositoryPanache
-                .findAll()
-                .page(page, size)
+                .find(query, parameters)
+                .page(page - 1, size)
                 .list()
                 .stream()
                 .map(ScheduleEntityMapper::toDomain)
                 .toList());
+
         pageResponse.setPage(page);
+
         pageResponse.setSize(size);
+
         pageResponse.setTotalElements(scheduleRepositoryPanache
                 .findAll().count());
+
         pageResponse.setTotalPages(scheduleRepositoryPanache.getEntityManager()
                 .createQuery("SELECT COUNT(s) FROM ScheduleEntity s", Long.class)
                 .getSingleResult()
                 .intValue() / size);
 
         return pageResponse;
+    }
+
+    private String addToQuery(String query, String aditionalQuery) {
+        if (query.equals("")) {
+            return aditionalQuery;
+        }
+
+        return query + " AND " + aditionalQuery;
     }
 }

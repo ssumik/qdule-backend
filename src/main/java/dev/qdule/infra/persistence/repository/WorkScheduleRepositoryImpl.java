@@ -48,7 +48,7 @@ public class WorkScheduleRepositoryImpl implements WorkScheduleRepository {
 
         pageResponse.setContent(workScheduleRepositoryPanache
                 .findAll()
-                .page(page, size)
+                .page(page - 1, size)
                 .list()
                 .stream()
                 .map(WorkScheduleEntityMapper::toDomain)

@@ -2,20 +2,26 @@ package dev.qdule.application.dto.responses;
 
 import java.time.DayOfWeek;
 
-import dev.qdule.domain.model.Shift;
+import dev.qdule.domain.model.WorkScheduleStatus;
 
 public class WorkScheduleResponse {
     private Long id;
-    private Shift shift;
+    private Long shiftId;
     private DayOfWeek dayOfWeek;
+    private WorkScheduleStatus status;
 
     public WorkScheduleResponse() {
     }
 
-    public WorkScheduleResponse(Long id, Shift shift, DayOfWeek dayOfWeek) {
+    public WorkScheduleResponse(Long id, Long shiftId, DayOfWeek dayOfWeek) {
+        this(id, shiftId, dayOfWeek, WorkScheduleStatus.ENABLED);
+    }
+
+    public WorkScheduleResponse(Long id, Long shiftId, DayOfWeek dayOfWeek, WorkScheduleStatus status) {
         this.id = id;
-        this.shift = shift;
+        this.shiftId = shiftId;
         this.dayOfWeek = dayOfWeek;
+        this.status = status;
     }
 
     public Long getId() {
@@ -26,12 +32,12 @@ public class WorkScheduleResponse {
         this.id = id;
     }
 
-    public Shift getShift() {
-        return shift;
+    public Long getShift() {
+        return shiftId;
     }
 
-    public void setShift(Shift shift) {
-        this.shift = shift;
+    public void setShift(Long shiftId) {
+        this.shiftId = shiftId;
     }
 
     public DayOfWeek getDayOfWeek() {
@@ -40,5 +46,13 @@ public class WorkScheduleResponse {
 
     public void setDayOfWeek(DayOfWeek dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
+    }
+
+    public WorkScheduleStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(WorkScheduleStatus status) {
+        this.status = status;
     }
 }

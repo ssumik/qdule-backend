@@ -1,17 +1,17 @@
 package dev.qdule.application.dto.requests;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class ChangelogCreateRequest {
-    private LocalDateTime dateTime;
+    private ZonedDateTime dateTime;
     private String description;
     private Long scheduleId;
 
-    public LocalDateTime getDateTime() {
+    public ZonedDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
     }
 

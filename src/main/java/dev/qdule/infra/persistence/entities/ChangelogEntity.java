@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "changelogs")
@@ -20,7 +20,7 @@ public class ChangelogEntity {
     private Long id;
 
     @Column(name = "date_time", nullable = false)
-    private LocalDateTime dateTime;
+    private ZonedDateTime dateTime;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
@@ -37,11 +37,11 @@ public class ChangelogEntity {
         this.id = id;
     }
 
-    public LocalDateTime getDateTime() {
+    public ZonedDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
     }
 

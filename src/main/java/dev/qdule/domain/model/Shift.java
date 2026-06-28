@@ -2,6 +2,8 @@ package dev.qdule.domain.model;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Shift {
     private Long id;
@@ -9,31 +11,28 @@ public class Shift {
     private LocalTime startTime;
     private LocalTime endTime;
     private Duration restTimeBetweenAppointments;
-    private LocalTime breakStartTime;
-    private LocalTime breakEndTime;
+    private List<ShiftBreak> breaks = new ArrayList<>();
 
     public Shift() {
     }
 
     public Shift(String name, LocalTime startTime, LocalTime endTime, Duration restTimeBetweenAppointments,
-            LocalTime breakStartTime, LocalTime breakEndTime) {
+            List<ShiftBreak> breaks) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.restTimeBetweenAppointments = restTimeBetweenAppointments;
-        this.breakStartTime = breakStartTime;
-        this.breakEndTime = breakEndTime;
+        this.breaks = breaks;
     }
 
     public Shift(Long id, String name, LocalTime startTime, LocalTime endTime, Duration restTimeBetweenAppointments,
-            LocalTime breakStartTime, LocalTime breakEndTime) {
+            List<ShiftBreak> breaks) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.restTimeBetweenAppointments = restTimeBetweenAppointments;
-        this.breakStartTime = breakStartTime;
-        this.breakEndTime = breakEndTime;
+        this.breaks = breaks;
     }
 
     public Long getId() {
@@ -76,20 +75,12 @@ public class Shift {
         this.restTimeBetweenAppointments = restTimeBetweenAppointments;
     }
 
-    public LocalTime getBreakStartTime() {
-        return breakStartTime;
+    public List<ShiftBreak> getBreaks() {
+        return breaks;
     }
 
-    public void setBreakStartTime(LocalTime breakStartTime) {
-        this.breakStartTime = breakStartTime;
-    }
-
-    public LocalTime getBreakEndTime() {
-        return breakEndTime;
-    }
-
-    public void setBreakEndTime(LocalTime breakEndTime) {
-        this.breakEndTime = breakEndTime;
+    public void setBreaks(List<ShiftBreak> breaks) {
+        this.breaks = breaks == null ? new ArrayList<>() : breaks;
     }
 
 }

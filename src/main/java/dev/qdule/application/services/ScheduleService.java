@@ -1,5 +1,7 @@
 package dev.qdule.application.services;
 
+import java.time.ZonedDateTime;
+
 import dev.qdule.application.dto.requests.ScheduleCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
@@ -9,6 +11,7 @@ import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.mapper.ScheduleMapper;
 import dev.qdule.domain.model.Client;
 import dev.qdule.domain.model.Schedule;
+import dev.qdule.domain.model.ScheduleStatus;
 import dev.qdule.domain.model.Treatment;
 import dev.qdule.domain.repository.ClientRepository;
 import dev.qdule.domain.repository.ScheduleRepository;
@@ -31,8 +34,18 @@ public class ScheduleService {
         this.clientRepository = clientRepository;
     }
 
-    public PageResponse<ScheduleResponse> getSchedules(int page, int size) {
-        var scheduleList = scheduleRepository.findAll(page, size);
+    public PageResponse<ScheduleResponse> getSchedules(
+            int page,
+            int size,
+            ZonedDateTime start,
+            ZonedDateTime end,
+            ScheduleStatus status) {
+        var scheduleList = scheduleRepository.findAll(
+                page,
+                size,
+                start,
+                end,
+                status);
 
         PageResponse<ScheduleResponse> response = new PageResponse<>();
 
@@ -62,6 +75,9 @@ public class ScheduleService {
                 .orElseThrow(() -> new TreatmentNotFoundException(scheduleRequest.getTreatmentId()));
         Client client = clientRepository.findById(scheduleRequest.getClientId())
                 .orElseThrow(() -> new ClientNotFoundException(scheduleRequest.getClientId()));
+
+        // TODO: VALIDAR SE O SCHEDULE ESTA SENDO EM UM DIA LIVRE
+        // TODO: VALIDAR SE JA EXISTE ALGO PARA ESTE HORARIO QUE SERIA CONFLITANTE
 
         Schedule schedule = new Schedule(
                 treatment,

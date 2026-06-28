@@ -12,7 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import dev.qdule.domain.model.ScheduleStatus;
 
@@ -35,10 +35,10 @@ public class ScheduleEntity {
     private ScheduleStatus status;
 
     @Column(name = "start_date_time", nullable = false)
-    private LocalDateTime startDateTime;
+    private ZonedDateTime startDateTime;
 
     @Column(name = "end_date_time", nullable = false)
-    private LocalDateTime endDateTime;
+    private ZonedDateTime endDateTime;
 
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;
@@ -83,19 +83,19 @@ public class ScheduleEntity {
         this.status = status;
     }
 
-    public LocalDateTime getStartDateTime() {
+    public ZonedDateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(LocalDateTime startDateTime) {
+    public void setStartDateTime(ZonedDateTime startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public LocalDateTime getEndDateTime() {
+    public ZonedDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(LocalDateTime endDateTime) {
+    public void setEndDateTime(ZonedDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 }

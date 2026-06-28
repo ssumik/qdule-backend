@@ -1,17 +1,17 @@
 package dev.qdule.application.dto.responses;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class ChangelogResponse {
     private Long id;
-    private LocalDateTime dateTime;
+    private ZonedDateTime dateTime;
     private String description;
     private Long scheduleId;
 
     public ChangelogResponse() {
     }
 
-    public ChangelogResponse(Long id, LocalDateTime dateTime, String description, Long scheduleId) {
+    public ChangelogResponse(Long id, ZonedDateTime dateTime, String description, Long scheduleId) {
         this.id = id;
         this.dateTime = dateTime;
         this.description = description;
@@ -26,11 +26,11 @@ public class ChangelogResponse {
         this.id = id;
     }
 
-    public LocalDateTime getDateTime() {
+    public ZonedDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
