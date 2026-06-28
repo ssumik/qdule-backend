@@ -1,6 +1,6 @@
 package dev.qdule.resources.exception;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.application.exception.ConflictException;
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler
             ErrorResponse error = new ErrorResponse(
                     Response.Status.NOT_FOUND.getStatusCode(),
                     exception.getMessage(),
-                    ZonedDateTime.now());
+                    LocalDateTime.now());
             Log.warn("User not found: " + exception.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(error).build();
         }
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler
             ErrorResponse error = new ErrorResponse(
                     Response.Status.NOT_FOUND.getStatusCode(),
                     exception.getMessage(),
-                    ZonedDateTime.now());
+                    LocalDateTime.now());
             Log.warn("Client not found: " + exception.getMessage());
             return Response.status(Response.Status.CONFLICT).entity(error).build();
         }
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler
             ErrorResponse error = new ErrorResponse(
                     Response.Status.CONFLICT.getStatusCode(),
                     exception.getMessage(),
-                    ZonedDateTime.now());
+                    LocalDateTime.now());
             Log.warn("Conflict found: " + exception.getMessage());
             return Response.status(Response.Status.CONFLICT).entity(error).build();
         }
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler
             ErrorResponse error = new ErrorResponse(
                     Response.Status.NOT_FOUND.getStatusCode(),
                     exception.getMessage(),
-                    ZonedDateTime.now());
+                    LocalDateTime.now());
             Log.warn("Treatment not found: " + exception.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(error).build();
         }
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler
             ErrorResponse error = new ErrorResponse(
                     Response.Status.NOT_FOUND.getStatusCode(),
                     exception.getMessage(),
-                    ZonedDateTime.now());
+                    LocalDateTime.now());
             Log.warn("Shift not found: " + exception.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(error).build();
         }
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler
             ErrorResponse error = new ErrorResponse(
                     Response.Status.METHOD_NOT_ALLOWED.getStatusCode(),
                     exception.getMessage(),
-                    ZonedDateTime.now());
+                    LocalDateTime.now());
             Log.warn("Shift not found: " + exception.getMessage());
             return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(error).build();
         }
@@ -80,7 +80,7 @@ public class GlobalExceptionHandler
             ErrorResponse error = new ErrorResponse(
                     Response.Status.METHOD_NOT_ALLOWED.getStatusCode(),
                     exception.getMessage(),
-                    ZonedDateTime.now());
+                    LocalDateTime.now());
             Log.warn("Shift not found: " + exception.getMessage());
             return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(error).build();
         }
@@ -88,7 +88,7 @@ public class GlobalExceptionHandler
         ErrorResponse error = new ErrorResponse(
                 Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                 "Internal server error: " + exception.getMessage(),
-                ZonedDateTime.now());
+                LocalDateTime.now());
 
         Log.errorf(exception, "Internal server error");
 
@@ -100,9 +100,9 @@ public class GlobalExceptionHandler
     public static class ErrorResponse {
         public int status;
         public String message;
-        public ZonedDateTime timestamp;
+        public LocalDateTime timestamp;
 
-        public ErrorResponse(int status, String message, ZonedDateTime timestamp) {
+        public ErrorResponse(int status, String message, LocalDateTime timestamp) {
             this.status = status;
             this.message = message;
             this.timestamp = timestamp;
