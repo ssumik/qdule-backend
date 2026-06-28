@@ -1,4 +1,5 @@
 package dev.qdule.resources.exception;
+
 import dev.qdule.resources.exception.GlobalExceptionHandler.ErrorResponse;
 import io.quarkus.security.UnauthorizedException;
 import jakarta.ws.rs.core.Response;
@@ -15,8 +16,7 @@ public class UnauthorizedExceptionHandler implements ExceptionMapper<Unauthorize
                 .entity(new ErrorResponse(
                         401,
                         "Token ausente ou inválido",
-                        java.time.LocalDateTime.now()
-                ))
+                        java.time.ZonedDateTime.now()))
                 .build();
     }
 }

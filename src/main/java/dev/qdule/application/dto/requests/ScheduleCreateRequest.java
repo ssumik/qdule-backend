@@ -1,14 +1,14 @@
 package dev.qdule.application.dto.requests;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import dev.qdule.domain.model.ScheduleStatus;
 
 public class ScheduleCreateRequest {
     private Long treatmentId;
     private Long clientId;
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
+    private ZonedDateTime startDateTime;
+    private ZonedDateTime endDateTime;
     private String reason;
     private ScheduleStatus status;
 
@@ -28,19 +28,19 @@ public class ScheduleCreateRequest {
         this.clientId = clientId;
     }
 
-    public LocalDateTime getStartDateTime() {
+    public ZonedDateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(LocalDateTime startDateTime) {
+    public void setStartDateTime(ZonedDateTime startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public LocalDateTime getEndDateTime() {
+    public ZonedDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(LocalDateTime endDateTime) {
+    public void setEndDateTime(ZonedDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 
