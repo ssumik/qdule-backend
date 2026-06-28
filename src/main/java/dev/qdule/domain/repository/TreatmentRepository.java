@@ -9,9 +9,7 @@ import dev.qdule.domain.model.TreatmentType;
 public interface TreatmentRepository {
     Optional<Treatment> findById(Long id);
 
-    PageResponse<Treatment> findAll(int page, int size);
-
-    PageResponse<Treatment> findAllByType(int page, int size, TreatmentType type);
+    PageResponse<Treatment> findAll(int page, int size, TreatmentType type, String text);
 
     Treatment save(Treatment treatment);
 

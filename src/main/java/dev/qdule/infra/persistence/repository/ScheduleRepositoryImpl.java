@@ -82,12 +82,10 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
         pageResponse.setSize(size);
 
         pageResponse.setTotalElements(scheduleRepositoryPanache
-                .findAll().count());
+                .find(query, parameters).count());
 
-        pageResponse.setTotalPages(scheduleRepositoryPanache.getEntityManager()
-                .createQuery("SELECT COUNT(s) FROM ScheduleEntity s", Long.class)
-                .getSingleResult()
-                .intValue() / size);
+        pageResponse.setTotalPages(scheduleRepositoryPanache
+                .find(query, parameters).count() / size);
 
         return pageResponse;
     }

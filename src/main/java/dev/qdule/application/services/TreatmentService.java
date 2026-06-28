@@ -22,15 +22,8 @@ public class TreatmentService {
         this.treatmentRepository = treatmentRepository;
     }
 
-    public PageResponse<TreatmentResponse> getTreatments(int page, int size, TreatmentType type) {
-        // DEPENDENDO DE COMO FOR FICANDO, DEVE TROCAR PARA LOGICA DE FILTRO USANDO
-        // OBJETOS
-        PageResponse<Treatment> treatmentList;
-        if (type == null) {
-            treatmentList = treatmentRepository.findAll(page, size);
-        } else {
-            treatmentList = treatmentRepository.findAllByType(page, size, type);
-        }
+    public PageResponse<TreatmentResponse> getTreatments(int page, int size, TreatmentType type, String text) {
+        PageResponse<Treatment> treatmentList = treatmentRepository.findAll(page, size, type, text);
 
         PageResponse<TreatmentResponse> response = new PageResponse<>();
 

@@ -1,5 +1,7 @@
 package dev.qdule.infra.persistence.repository;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import dev.qdule.application.dto.responses.PageResponse;
@@ -45,8 +47,11 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
     }
 
     @Override
-    public PageResponse<Treatment> findAll(int page, int size) {
+    public PageResponse<Treatment> findAll(int page, int size, TreatmentType type, String text) {
         var pageResponse = new PageResponse<Treatment>();
+
+        Map<String, Object> parameters = new HashMap<>();
+        String query = "";
 
         pageResponse.setContent(treatmentRepositoryPanache
                 .findAll()
@@ -56,15 +61,24 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
                 .map(TreatmentEntityMapper::toDomain)
                 .toList());
 
+        if (type != null) {
+            query = addToQuery(query, "type = :type");
+            parameters.put("type", type);
+        }
+
+        if (!text.equals("") && text != null) {
+            query = addToQuery(query, "name like :text or description like :text or type like :text");
+            parameters.put("text", "%" + text + "%");
+        }
+
         pageResponse.setPage(page);
 
         pageResponse.setSize(size);
 
         pageResponse.setTotalElements(treatmentRepositoryPanache
                 .findAll()
-                .count()
-            );
-                
+                .count());
+
         pageResponse.setTotalPages(treatmentRepositoryPanache
                 .getEntityManager()
                 .createQuery("SELECT COUNT(t) FROM TreatmentEntity t", Long.class)
@@ -74,35 +88,11 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
         return pageResponse;
     }
 
-    @Override
-    public PageResponse<Treatment> findAllByType(int page, int size, TreatmentType type) {
-        var pageResponse = new PageResponse<Treatment>();
+    private String addToQuery(String query, String aditionalQuery) {
+        if (query.equals("")) {
+            return aditionalQuery;
+        }
 
-        pageResponse.setContent(treatmentRepositoryPanache
-                .find("type = ?1", type)
-                .page(page - 1, size)
-                .list()
-                .stream()
-                .map(TreatmentEntityMapper::toDomain)
-                .toList());
-
-        pageResponse.setPage(page);
-
-        pageResponse.setSize(size);
-
-        pageResponse.setTotalElements(treatmentRepositoryPanache
-                .find("type = ?1", type)
-                .count()
-            );
-                
-
-        long totalPages = treatmentRepositoryPanache
-                .find("type = ?1", type)
-                .count();
-
-        pageResponse.setTotalPages(totalPages);
-
-        return pageResponse;
+        return query + " AND " + aditionalQuery;
     }
-
 }
