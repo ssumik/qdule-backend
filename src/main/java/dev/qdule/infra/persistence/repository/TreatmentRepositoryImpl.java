@@ -53,37 +53,35 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
         Map<String, Object> parameters = new HashMap<>();
         String query = "";
 
+        if (type != null) {
+            query = addToQuery(query, "type = :type");
+            parameters.put("type", type);
+        }
+
+        if (text != null && !text.equals("")) {
+            query = addToQuery(query, "name like :text or description like :text");
+            parameters.put("text", "%" + text + "%");
+        }
+
         pageResponse.setContent(treatmentRepositoryPanache
-                .findAll()
+                .find(query, parameters)
                 .page(page - 1, size)
                 .list()
                 .stream()
                 .map(TreatmentEntityMapper::toDomain)
                 .toList());
 
-        if (type != null) {
-            query = addToQuery(query, "type = :type");
-            parameters.put("type", type);
-        }
-
-        if (!text.equals("") && text != null) {
-            query = addToQuery(query, "name like :text or description like :text or type like :text");
-            parameters.put("text", "%" + text + "%");
-        }
-
         pageResponse.setPage(page);
 
         pageResponse.setSize(size);
 
         pageResponse.setTotalElements(treatmentRepositoryPanache
-                .findAll()
+                .find(query, parameters)
                 .count());
 
         pageResponse.setTotalPages(treatmentRepositoryPanache
-                .getEntityManager()
-                .createQuery("SELECT COUNT(t) FROM TreatmentEntity t", Long.class)
-                .getSingleResult()
-                .intValue() / size);
+                .find(query, parameters)
+                .count() / size);
 
         return pageResponse;
     }

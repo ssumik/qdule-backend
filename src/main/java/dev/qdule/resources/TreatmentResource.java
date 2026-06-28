@@ -41,7 +41,7 @@ public class TreatmentResource {
             @QueryParam("page") int page,
             @QueryParam("size") int size,
             @QueryParam("type") TreatmentType type,
-            @QueryParam("type") String text) {
+            @QueryParam("text") String text) {
         PageResponse<TreatmentResponse> response = treatmentService.getTreatments(page, size, type, text);
         return Response.ok().entity(response).build();
     }
