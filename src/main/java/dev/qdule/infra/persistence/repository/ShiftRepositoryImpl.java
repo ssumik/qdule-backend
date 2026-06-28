@@ -1,5 +1,6 @@
 package dev.qdule.infra.persistence.repository;
 
+import java.time.DayOfWeek;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -7,10 +8,12 @@ import java.util.Optional;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.ShiftNotFoundException;
+import dev.qdule.application.mapper.ShiftMapper;
 import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.model.ShiftBreak;
 import dev.qdule.domain.repository.ShiftRepository;
 import dev.qdule.infra.mapper.ShiftEntityMapper;
+import dev.qdule.infra.mapper.UserEntityMapper;
 import dev.qdule.infra.persistence.panache.ShiftRepositoryPanache;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -100,5 +103,13 @@ public class ShiftRepositoryImpl implements ShiftRepository {
                 .intValue() / size);
 
         return pageResponse;
+    }
+
+    @Override
+    public Optional<Shift> findByDay(DayOfWeek dayOfWeek) {
+        return shiftRepositoryPanache
+                .find("dayOfWeek = ?1", dayOfWeek)
+                .firstResultOptional()
+                .map(ShiftEntityMapper::toDomain);
     }
 }

@@ -13,7 +13,9 @@ public class ShiftEntityMapper {
                 entity.getRestTimeBetweenAppointments(),
                 entity.getBreaks().stream()
                         .map(ShiftBreakEntityMapper::toDomain)
-                        .toList());
+                        .toList(),
+                entity.getDayOfWeek(),
+                entity.getStatus());
     }
 
     public static ShiftEntity toEntity(Shift shift) {
@@ -27,6 +29,8 @@ public class ShiftEntityMapper {
         entity.setBreaks(shift.getBreaks().stream()
                 .map(shiftBreak -> ShiftBreakEntityMapper.toEntity(shiftBreak, entity))
                 .toList());
+        entity.setDayOfWeek(shift.getDayOfWeek());
+        entity.setStatus(shift.getStatus());
 
         return entity;
     }
