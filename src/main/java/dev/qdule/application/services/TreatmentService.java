@@ -22,12 +22,13 @@ public class TreatmentService {
         this.treatmentRepository = treatmentRepository;
     }
 
-    public PageResponse<TreatmentResponse> getTreatments(int page, int size,TreatmentType type) {
-        // DEPENDENDO DE COMO FOR FICANDO, DEVE TROCAR PARA LOGICA DE FILTRO USANDO OBJETOS
+    public PageResponse<TreatmentResponse> getTreatments(int page, int size, TreatmentType type) {
+        // DEPENDENDO DE COMO FOR FICANDO, DEVE TROCAR PARA LOGICA DE FILTRO USANDO
+        // OBJETOS
         PageResponse<Treatment> treatmentList;
-        if (type == null){
+        if (type == null) {
             treatmentList = treatmentRepository.findAll(page, size);
-        }else {
+        } else {
             treatmentList = treatmentRepository.findAllByType(page, size, type);
         }
 
@@ -62,8 +63,7 @@ public class TreatmentService {
                 treatmentRequest.getPrice(),
                 treatmentRequest.getImagePath(),
                 treatmentRequest.getStatus(),
-                treatmentRequest.getType()
-            );
+                treatmentRequest.getType());
 
         var savedTreatment = treatmentRepository.save(treatment);
 
@@ -78,7 +78,7 @@ public class TreatmentService {
     @Transactional
     public TreatmentResponse updateTreatment(Long id, TreatmentUpdateRequest treatmentRequest) {
         Treatment treatment = treatmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Treatment not found"));
+                .orElseThrow(() -> new TreatmentNotFoundException(id));
 
         treatment.setName(treatmentRequest.getName());
         treatment.setDescription(treatmentRequest.getDescription());

@@ -7,6 +7,7 @@ import dev.qdule.application.dto.requests.ScheduleUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ScheduleResponse;
 import dev.qdule.application.exception.ClientNotFoundException;
+import dev.qdule.application.exception.ScheduleNotFoundException;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.mapper.ScheduleMapper;
 import dev.qdule.domain.model.Client;
@@ -22,92 +23,92 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ScheduleService {
-    private ScheduleRepository scheduleRepository;
-    private TreatmentRepository treatmentRepository;
-    private ClientRepository clientRepository;
+        private ScheduleRepository scheduleRepository;
+        private TreatmentRepository treatmentRepository;
+        private ClientRepository clientRepository;
 
-    @Inject
-    public ScheduleService(ScheduleRepository scheduleRepository, TreatmentRepository treatmentRepository,
-            ClientRepository clientRepository) {
-        this.scheduleRepository = scheduleRepository;
-        this.treatmentRepository = treatmentRepository;
-        this.clientRepository = clientRepository;
-    }
+        @Inject
+        public ScheduleService(ScheduleRepository scheduleRepository, TreatmentRepository treatmentRepository,
+                        ClientRepository clientRepository) {
+                this.scheduleRepository = scheduleRepository;
+                this.treatmentRepository = treatmentRepository;
+                this.clientRepository = clientRepository;
+        }
 
-    public PageResponse<ScheduleResponse> getSchedules(
-            int page,
-            int size,
-            ZonedDateTime start,
-            ZonedDateTime end,
-            ScheduleStatus status) {
-        var scheduleList = scheduleRepository.findAll(
-                page,
-                size,
-                start,
-                end,
-                status);
+        public PageResponse<ScheduleResponse> getSchedules(
+                        int page,
+                        int size,
+                        ZonedDateTime start,
+                        ZonedDateTime end,
+                        ScheduleStatus status) {
+                var scheduleList = scheduleRepository.findAll(
+                                page,
+                                size,
+                                start,
+                                end,
+                                status);
 
-        PageResponse<ScheduleResponse> response = new PageResponse<>();
+                PageResponse<ScheduleResponse> response = new PageResponse<>();
 
-        response.setContent(
-                scheduleList.getContent()
-                        .stream()
-                        .map(ScheduleMapper::toResponse)
-                        .toList());
+                response.setContent(
+                                scheduleList.getContent()
+                                                .stream()
+                                                .map(ScheduleMapper::toResponse)
+                                                .toList());
 
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(scheduleList.getTotalElements());
-        response.setTotalPages(scheduleList.getTotalPages());
+                response.setPage(page);
+                response.setSize(size);
+                response.setTotalElements(scheduleList.getTotalElements());
+                response.setTotalPages(scheduleList.getTotalPages());
 
-        return response;
-    }
+                return response;
+        }
 
-    public ScheduleResponse getScheduleById(Long id) {
-        Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Schedule not found"));
-        return ScheduleMapper.toResponse(schedule);
-    }
+        public ScheduleResponse getScheduleById(Long id) {
+                Schedule schedule = scheduleRepository.findById(id)
+                                .orElseThrow(() -> new ScheduleNotFoundException(id));
+                return ScheduleMapper.toResponse(schedule);
+        }
 
-    @Transactional
-    public ScheduleResponse createSchedule(ScheduleCreateRequest scheduleRequest) {
-        Treatment treatment = treatmentRepository.findById(scheduleRequest.getTreatmentId())
-                .orElseThrow(() -> new TreatmentNotFoundException(scheduleRequest.getTreatmentId()));
-        Client client = clientRepository.findById(scheduleRequest.getClientId())
-                .orElseThrow(() -> new ClientNotFoundException(scheduleRequest.getClientId()));
+        @Transactional
+        public ScheduleResponse createSchedule(ScheduleCreateRequest scheduleRequest) {
+                Treatment treatment = treatmentRepository.findById(scheduleRequest.getTreatmentId())
+                                .orElseThrow(() -> new TreatmentNotFoundException(scheduleRequest.getTreatmentId()));
+                Client client = clientRepository.findById(scheduleRequest.getClientId())
+                                .orElseThrow(() -> new ClientNotFoundException(scheduleRequest.getClientId()));
 
-        // TODO: VALIDAR SE O SCHEDULE ESTA SENDO EM UM DIA LIVRE
-        // TODO: VALIDAR SE JA EXISTE ALGO PARA ESTE HORARIO QUE SERIA CONFLITANTE
+                // TODO: VALIDAR SE O SCHEDULE ESTA SENDO EM UM DIA LIVRE
+                // TODO: VALIDAR SE JA EXISTE ALGO PARA ESTE HORARIO QUE SERIA CONFLITANTE
 
-        Schedule schedule = new Schedule(
-                treatment,
-                client,
-                scheduleRequest.getStartDateTime(),
-                scheduleRequest.getEndDateTime(),
-                scheduleRequest.getReason(),
-                scheduleRequest.getStatus());
+                Schedule schedule = new Schedule(
+                                treatment,
+                                client,
+                                scheduleRequest.getStartDateTime(),
+                                scheduleRequest.getEndDateTime(),
+                                scheduleRequest.getReason(),
+                                scheduleRequest.getStatus());
 
-        var savedSchedule = scheduleRepository.save(schedule);
+                var savedSchedule = scheduleRepository.save(schedule);
 
-        return ScheduleMapper.toResponse(savedSchedule);
-    }
+                return ScheduleMapper.toResponse(savedSchedule);
+        }
 
-    @Transactional
-    public ScheduleResponse updateSchedule(Long id, ScheduleUpdateRequest scheduleRequest) {
-        Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Schedule not found"));
+        @Transactional
+        public ScheduleResponse updateSchedule(Long id, ScheduleUpdateRequest scheduleRequest) {
+                Schedule schedule = scheduleRepository.findById(id)
+                                .orElseThrow(() -> new ScheduleNotFoundException(id));
 
-        schedule.setStartDateTime(scheduleRequest.getStartDateTime());
-        schedule.setEndDateTime(scheduleRequest.getEndDateTime());
-        schedule.setReason(scheduleRequest.getReason());
-        schedule.setStatus(scheduleRequest.getStatus());
+                schedule.setStartDateTime(scheduleRequest.getStartDateTime());
+                schedule.setEndDateTime(scheduleRequest.getEndDateTime());
+                schedule.setReason(scheduleRequest.getReason());
+                schedule.setStatus(scheduleRequest.getStatus());
 
-        var savedSchedule = scheduleRepository.save(schedule);
-        return ScheduleMapper.toResponse(savedSchedule);
-    }
+                var savedSchedule = scheduleRepository.save(schedule);
+                return ScheduleMapper.toResponse(savedSchedule);
+        }
 
-    @Transactional
-    public void deleteScheduleById(Long id) {
-        scheduleRepository.removeById(id);
-    }
+        @Transactional
+        public void deleteScheduleById(Long id) {
+                scheduleRepository.removeById(id);
+        }
 }

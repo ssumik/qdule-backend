@@ -15,6 +15,8 @@ public class ShiftMapper {
         response.setBreaks(shift.getBreaks().stream()
                 .map(ShiftBreakMapper::toResponse)
                 .toList());
+        response.setDayOfWeek(shift.getDayOfWeek());
+        response.setStatus(shift.getStatus());
 
         return response;
     }

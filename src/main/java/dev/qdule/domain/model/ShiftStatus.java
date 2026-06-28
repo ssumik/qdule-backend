@@ -1,6 +1,6 @@
 package dev.qdule.domain.model;
 
-public enum WorkScheduleStatus {
+public enum ShiftStatus {
     ENABLED,
     DISABLED
 }

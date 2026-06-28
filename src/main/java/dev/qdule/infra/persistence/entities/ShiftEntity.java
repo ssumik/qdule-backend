@@ -4,15 +4,19 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.qdule.domain.model.ShiftStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 
 @Entity
@@ -36,6 +40,30 @@ public class ShiftEntity {
 
     @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ShiftBreakEntity> breaks = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "day_of_week", nullable = false, unique = true)
+    private DayOfWeek dayOfWeek;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ShiftStatus status;
+
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
+
+    public ShiftStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ShiftStatus status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return id;
