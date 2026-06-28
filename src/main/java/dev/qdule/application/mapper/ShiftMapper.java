@@ -12,8 +12,9 @@ public class ShiftMapper {
         response.setStartTime(shift.getStartTime());
         response.setEndTime(shift.getEndTime());
         response.setRestTimeBetweenAppointments(shift.getRestTimeBetweenAppointments());
-        response.setBreakStartTime(shift.getBreakStartTime());
-        response.setBreakEndTime(shift.getBreakEndTime());
+        response.setBreaks(shift.getBreaks().stream()
+                .map(ShiftBreakMapper::toResponse)
+                .toList());
 
         return response;
     }

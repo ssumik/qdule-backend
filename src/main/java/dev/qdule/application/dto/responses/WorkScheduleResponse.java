@@ -2,7 +2,6 @@ package dev.qdule.application.dto.responses;
 
 import java.time.DayOfWeek;
 
-import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.model.WorkScheduleStatus;
 
 public class WorkScheduleResponse {

@@ -2,14 +2,15 @@ package dev.qdule.application.dto.requests;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ShiftCreateRequest {
     private String name;
     private LocalTime startTime;
     private LocalTime endTime;
     private Duration restTimeBetweenAppointments;
-    private LocalTime breakStartTime;
-    private LocalTime breakEndTime;
+    private List<ShiftBreakRequest> breaks = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -43,19 +44,11 @@ public class ShiftCreateRequest {
         this.restTimeBetweenAppointments = restTimeBetweenAppointments;
     }
 
-    public LocalTime getBreakStartTime() {
-        return breakStartTime;
+    public List<ShiftBreakRequest> getBreaks() {
+        return breaks;
     }
 
-    public void setBreakStartTime(LocalTime breakStartTime) {
-        this.breakStartTime = breakStartTime;
-    }
-
-    public LocalTime getBreakEndTime() {
-        return breakEndTime;
-    }
-
-    public void setBreakEndTime(LocalTime breakEndTime) {
-        this.breakEndTime = breakEndTime;
+    public void setBreaks(List<ShiftBreakRequest> breaks) {
+        this.breaks = breaks == null ? new ArrayList<>() : breaks;
     }
 }

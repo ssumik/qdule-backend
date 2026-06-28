@@ -7,7 +7,6 @@ import dev.qdule.application.exception.ShiftNotFoundException;
 import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.repository.ShiftRepository;
 import dev.qdule.infra.mapper.ShiftEntityMapper;
-import dev.qdule.infra.persistence.entities.ShiftEntity;
 import dev.qdule.infra.persistence.panache.ShiftRepositoryPanache;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
