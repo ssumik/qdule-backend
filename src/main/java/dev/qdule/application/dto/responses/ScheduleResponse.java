@@ -1,6 +1,6 @@
 package dev.qdule.application.dto.responses;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import dev.qdule.domain.model.ScheduleStatus;
 
@@ -8,16 +8,16 @@ public class ScheduleResponse {
     private Long id;
     private Long treatmentId;
     private Long clientId;
-    private ZonedDateTime startDateTime;
-    private ZonedDateTime endDateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     private String reason;
     private ScheduleStatus status;
 
     public ScheduleResponse() {
     }
 
-    public ScheduleResponse(Long id, Long treatmentId, Long clientId, ZonedDateTime startDateTime,
-            ZonedDateTime endDateTime, String reason, ScheduleStatus status) {
+    public ScheduleResponse(Long id, Long treatmentId, Long clientId, LocalDateTime startDateTime,
+            LocalDateTime endDateTime, String reason, ScheduleStatus status) {
         this.id = id;
         this.treatmentId = treatmentId;
         this.clientId = clientId;
@@ -51,19 +51,19 @@ public class ScheduleResponse {
         this.clientId = clientId;
     }
 
-    public ZonedDateTime getStartDateTime() {
+    public LocalDateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(ZonedDateTime startDateTime) {
+    public void setStartDateTime(LocalDateTime startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public ZonedDateTime getEndDateTime() {
+    public LocalDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(ZonedDateTime endDateTime) {
+    public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 

@@ -1,13 +1,12 @@
 package dev.qdule.infra.persistence.repository;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import dev.qdule.application.dto.responses.PageResponse;
-import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.ScheduleNotFoundException;
 import dev.qdule.domain.model.Schedule;
 import dev.qdule.domain.model.ScheduleStatus;
@@ -52,8 +51,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     public PageResponse<Schedule> findAll(
             int page,
             int size,
-            ZonedDateTime start,
-            ZonedDateTime end,
+            LocalDateTime start,
+            LocalDateTime end,
             ScheduleStatus status) {
         var pageResponse = new PageResponse<Schedule>();
 

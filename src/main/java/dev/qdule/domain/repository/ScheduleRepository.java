@@ -1,6 +1,6 @@
 package dev.qdule.domain.repository;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import dev.qdule.application.dto.responses.PageResponse;
@@ -13,8 +13,8 @@ public interface ScheduleRepository {
     PageResponse<Schedule> findAll(
             int page,
             int size,
-            ZonedDateTime start,
-            ZonedDateTime end,
+            LocalDateTime start,
+            LocalDateTime end,
             ScheduleStatus status);
 
     Schedule save(Schedule schedule);
