@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 
 import dev.qdule.domain.model.TreatmentStatus;
+import dev.qdule.domain.model.TreatmentType;
 
 public class TreatmentResponse {
     private Long id;
@@ -13,6 +14,7 @@ public class TreatmentResponse {
     private BigDecimal price;
     private String imagePath;
     private TreatmentStatus status;
+    private TreatmentType type;
 
     public TreatmentResponse() {
     }
@@ -24,7 +26,9 @@ public class TreatmentResponse {
             Duration duration,
             BigDecimal price,
             String imagePath,
-            TreatmentStatus status) {
+            TreatmentStatus status,
+            TreatmentType type
+        ) {
 
         this.id = id;
         this.name = name;
@@ -33,6 +37,7 @@ public class TreatmentResponse {
         this.price = price;
         this.imagePath = imagePath;
         this.status = status;
+        this.type = type;
     }
 
     public Long getId() {
@@ -89,5 +94,13 @@ public class TreatmentResponse {
 
     public void setStatus(TreatmentStatus status) {
         this.status = status;
+    }
+
+    public TreatmentType getType() {
+        return type;
+    }
+
+    public void setType(TreatmentType type) {
+        this.type = type;
     }
 }

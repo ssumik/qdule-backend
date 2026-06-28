@@ -17,6 +17,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+
+// TODO: ajustar o changelog 
 
 @Path("/changelogs")
 @Produces(MediaType.APPLICATION_JSON)
@@ -31,6 +36,14 @@ public class ChangelogResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "200",
+        description = "Changelogs list",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = PageResponse.class)
+        )
+    )
     public Response getChangelogs(@QueryParam("page") int page, @QueryParam("size") int size) {
         PageResponse<ChangelogResponse> response = changelogService.getChangelogs(page, size);
         return Response.ok().entity(response).build();
@@ -39,6 +52,14 @@ public class ChangelogResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "200",
+        description = "Changelog details",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = ChangelogResponse.class)
+        )
+    )
     public Response findChangelogById(@PathParam("id") Long id) {
         ChangelogResponse response = changelogService.getChangelogById(id);
         return Response.ok().entity(response).build();
@@ -47,6 +68,14 @@ public class ChangelogResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "201",
+        description = "Changelog created",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = ChangelogResponse.class)
+        )
+    )
     public Response createChangelog(ChangelogCreateRequest request) {
         ChangelogResponse response = changelogService.createChangelog(request);
         return Response.status(Response.Status.CREATED)
@@ -58,6 +87,14 @@ public class ChangelogResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(
+        responseCode = "200",
+        description = "Changelog updated",
+        content = @Content(
+            mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = ChangelogResponse.class)
+        )
+    )
     public Response updateChangelog(@PathParam("id") Long id, ChangelogUpdateRequest request) {
         ChangelogResponse response = changelogService.updateChangelog(id, request);
         return Response.ok().entity(response).build();
@@ -65,6 +102,10 @@ public class ChangelogResource {
 
     @DELETE
     @Path("/{id}")
+    @APIResponse(
+        responseCode = "204",
+        description = "Changelog deleted"
+    )
     public Response deleteChangelogById(@PathParam("id") Long id) {
         changelogService.deleteChangelogById(id);
         return Response.noContent().build();

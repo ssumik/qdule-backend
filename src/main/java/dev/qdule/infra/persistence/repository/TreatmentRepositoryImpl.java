@@ -1,11 +1,11 @@
 package dev.qdule.infra.persistence.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.domain.model.Treatment;
+import dev.qdule.domain.model.TreatmentType;
 import dev.qdule.domain.repository.TreatmentRepository;
 import dev.qdule.infra.mapper.TreatmentEntityMapper;
 import dev.qdule.infra.persistence.entities.TreatmentEntity;
@@ -50,19 +50,57 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
 
         pageResponse.setContent(treatmentRepositoryPanache
                 .findAll()
-                .page(page, size)
+                .page(page - 1, size)
                 .list()
                 .stream()
                 .map(TreatmentEntityMapper::toDomain)
                 .toList());
+
         pageResponse.setPage(page);
+
         pageResponse.setSize(size);
+
         pageResponse.setTotalElements(treatmentRepositoryPanache
-                .findAll().count());
-        pageResponse.setTotalPages(treatmentRepositoryPanache.getEntityManager()
+                .findAll()
+                .count()
+            );
+                
+        pageResponse.setTotalPages(treatmentRepositoryPanache
+                .getEntityManager()
                 .createQuery("SELECT COUNT(t) FROM TreatmentEntity t", Long.class)
                 .getSingleResult()
                 .intValue() / size);
+
+        return pageResponse;
+    }
+
+    @Override
+    public PageResponse<Treatment> findAllByType(int page, int size, TreatmentType type) {
+        var pageResponse = new PageResponse<Treatment>();
+
+        pageResponse.setContent(treatmentRepositoryPanache
+                .find("type = ?1", type)
+                .page(page - 1, size)
+                .list()
+                .stream()
+                .map(TreatmentEntityMapper::toDomain)
+                .toList());
+
+        pageResponse.setPage(page);
+
+        pageResponse.setSize(size);
+
+        pageResponse.setTotalElements(treatmentRepositoryPanache
+                .find("type = ?1", type)
+                .count()
+            );
+                
+
+        long totalPages = treatmentRepositoryPanache
+                .find("type = ?1", type)
+                .count();
+
+        pageResponse.setTotalPages(totalPages);
 
         return pageResponse;
     }
