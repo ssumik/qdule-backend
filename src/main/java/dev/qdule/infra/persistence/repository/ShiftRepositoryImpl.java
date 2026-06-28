@@ -85,7 +85,7 @@ public class ShiftRepositoryImpl implements ShiftRepository {
 
         pageResponse.setContent(shiftRepositoryPanache
                 .findAll()
-                .page(page, size)
+                .page(page - 1, size)
                 .list()
                 .stream()
                 .map(ShiftEntityMapper::toDomain)

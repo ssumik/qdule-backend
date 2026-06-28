@@ -53,7 +53,7 @@ public class ChangelogRepositoryImpl implements ChangelogRepository {
 
         pageResponse.setContent(changelogRepositoryPanache
                 .findAll()
-                .page(page, size)
+                .page(page - 1, size)
                 .list()
                 .stream()
                 .map(ChangelogEntityMapper::toDomain)
