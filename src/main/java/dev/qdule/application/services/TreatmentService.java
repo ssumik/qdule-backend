@@ -33,9 +33,6 @@ public class TreatmentService {
 
         PageResponse<TreatmentResponse> response = new PageResponse<>();
 
-        System.out.println(treatmentList.getContent()
-                        .stream().count());
-
         response.setContent(
                 treatmentList.getContent()
                         .stream()
