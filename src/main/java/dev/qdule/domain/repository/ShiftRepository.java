@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.domain.model.Shift;
+import dev.qdule.domain.model.ShiftStatus;
 
 public interface ShiftRepository {
     Optional<Shift> findByDay(DayOfWeek dayOfWeek);
@@ -15,7 +15,7 @@ public interface ShiftRepository {
 
     Optional<Shift> findById(Long id);
 
-    PageResponse<Shift> findAll(int page, int size);
+    List<Shift> findAll(ShiftStatus status, List<DayOfWeek> days);
 
     Shift save(Shift shift);
 
