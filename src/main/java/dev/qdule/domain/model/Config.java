@@ -4,25 +4,19 @@ public class Config {
     private Long id;
     private String sendEmail;
     private String contactLink;
-    private String cancelLink;
-    private String rescheduleLink;
 
     public Config() {
     }
 
-    public Config(String sendEmail, String contactLink, String cancelLink, String rescheduleLink) {
+    public Config(String sendEmail, String contactLink) {
         this.sendEmail = sendEmail;
         this.contactLink = contactLink;
-        this.cancelLink = cancelLink;
-        this.rescheduleLink = rescheduleLink;
     }
 
-    public Config(Long id, String sendEmail, String contactLink, String cancelLink, String rescheduleLink) {
+    public Config(Long id, String sendEmail, String contactLink) {
         this.id = id;
         this.sendEmail = sendEmail;
         this.contactLink = contactLink;
-        this.cancelLink = cancelLink;
-        this.rescheduleLink = rescheduleLink;
     }
 
     public Long getId() {
@@ -47,21 +41,5 @@ public class Config {
 
     public void setContactLink(String contactLink) {
         this.contactLink = contactLink;
-    }
-
-    public String getCancelLink() {
-        return cancelLink;
-    }
-
-    public void setCancelLink(String cancelLink) {
-        this.cancelLink = cancelLink;
-    }
-
-    public String getRescheduleLink() {
-        return rescheduleLink;
-    }
-
-    public void setRescheduleLink(String rescheduleLink) {
-        this.rescheduleLink = rescheduleLink;
     }
 }

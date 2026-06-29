@@ -20,21 +20,13 @@ public class ConfigEntity {
     @Column(name = "contact_link", length = 500)
     private String contactLink;
 
-    @Column(name = "cancel_link", length = 500)
-    private String cancelLink;
-
-    @Column(name = "reschedule_link", length = 500)
-    private String rescheduleLink;
-
     public ConfigEntity() {
     }
 
-    public ConfigEntity(Long id, String sendEmail, String contactLink, String cancelLink, String rescheduleLink) {
+    public ConfigEntity(Long id, String sendEmail, String contactLink) {
         this.id = id;
         this.sendEmail = sendEmail;
         this.contactLink = contactLink;
-        this.cancelLink = cancelLink;
-        this.rescheduleLink = rescheduleLink;
     }
 
     public Long getId() {
@@ -59,21 +51,5 @@ public class ConfigEntity {
 
     public void setContactLink(String contactLink) {
         this.contactLink = contactLink;
-    }
-
-    public String getCancelLink() {
-        return cancelLink;
-    }
-
-    public void setCancelLink(String cancelLink) {
-        this.cancelLink = cancelLink;
-    }
-
-    public String getRescheduleLink() {
-        return rescheduleLink;
-    }
-
-    public void setRescheduleLink(String rescheduleLink) {
-        this.rescheduleLink = rescheduleLink;
     }
 }

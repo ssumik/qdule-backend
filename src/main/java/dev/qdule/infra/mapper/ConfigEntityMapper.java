@@ -8,9 +8,7 @@ public class ConfigEntityMapper {
         return new Config(
                 entity.getId(),
                 entity.getSendEmail(),
-                entity.getContactLink(),
-                entity.getCancelLink(),
-                entity.getRescheduleLink());
+                entity.getContactLink());
     }
 
     public static ConfigEntity toEntity(Config config) {
@@ -19,8 +17,6 @@ public class ConfigEntityMapper {
         entity.setId(config.getId());
         entity.setSendEmail(config.getSendEmail());
         entity.setContactLink(config.getContactLink());
-        entity.setCancelLink(config.getCancelLink());
-        entity.setRescheduleLink(config.getRescheduleLink());
 
         return entity;
     }

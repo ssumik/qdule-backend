@@ -21,7 +21,7 @@ public class ConfigService {
     public ConfigResponse getConfig() {
         Config config = configRepository
                 .findCurrent()
-                .orElse(new Config(null, null, null, null));
+                .orElse(new Config(null, null));
 
         return ConfigMapper.toResponse(config);
     }
@@ -34,8 +34,6 @@ public class ConfigService {
 
         config.setSendEmail(request.getSendEmail());
         config.setContactLink(request.getContactLink());
-        config.setCancelLink(request.getCancelLink());
-        config.setRescheduleLink(request.getRescheduleLink());
 
         var savedConfig = configRepository.save(config);
 

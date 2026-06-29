@@ -10,8 +10,6 @@ public class ConfigMapper {
         response.setId(config.getId());
         response.setSendEmail(config.getSendEmail());
         response.setContactLink(config.getContactLink());
-        response.setCancelLink(config.getCancelLink());
-        response.setRescheduleLink(config.getRescheduleLink());
 
         return response;
     }
