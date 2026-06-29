@@ -16,9 +16,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import dev.qdule.application.dto.responses.AvaliableScheduleResponse;
+import dev.qdule.application.dto.responses.CalendarListResponse;
+import dev.qdule.application.dto.responses.CalendarResponse;
 import dev.qdule.application.exception.TreatmentDisabledException;
 import dev.qdule.application.exception.TreatmentNotFoundException;
+import dev.qdule.application.mapper.CalendarListMapper;
 import dev.qdule.domain.model.Schedule;
 import dev.qdule.domain.model.ScheduleStatus;
 import dev.qdule.domain.model.Shift;
@@ -47,7 +49,7 @@ public class CalendarService {
                 this.shiftRepository = shiftRepository;
         }
 
-        public List<AvaliableScheduleResponse> availableSchedule(
+        public CalendarListResponse availableSchedule(
                         Long treatmentId,
                         int year,
                         int month) {
@@ -62,7 +64,7 @@ public class CalendarService {
                         throw new TreatmentDisabledException(treatmentId);
                 }
 
-                List<AvaliableScheduleResponse> response = new ArrayList<>();
+                List<CalendarResponse> response = new ArrayList<>();
                 Map<DayOfWeek, Shift> shiftsByDay = loadEnabledShiftsByDay(startDate, endDate);
                 Map<LocalDate, List<Schedule>> schedulesByDate = loadBlockingSchedulesByDate(startDate, endDate);
 
@@ -78,16 +80,16 @@ public class CalendarService {
                         response.add(buildResponse(treatmentId, date, slots));
                 }
 
-                return response;
+                return CalendarListMapper.toResponse(response);
         }
 
-        public List<AvaliableScheduleResponse> scheduledTreatment(
+        public CalendarListResponse scheduledTreatment(
                         int year,
                         int month) {
                 LocalDate startDate = getStartDate(year, month);
                 LocalDate endDate = getEndDate(year, month);
 
-                return scheduleRepository.findByStatuses(
+                var responseList = scheduleRepository.findByStatuses(
                                 startDate.atStartOfDay(),
                                 endDate.plusDays(1).atStartOfDay(),
                                 List.of(
@@ -107,9 +109,11 @@ public class CalendarService {
                                                                 .map(schedule -> schedule.getStartDateTime()
                                                                                 .toLocalTime())
                                                                 .toList()))
-                                .sorted(Comparator.comparing(AvaliableScheduleResponse::getDate)
-                                                .thenComparing(AvaliableScheduleResponse::getTreatmentId))
+                                .sorted(Comparator.comparing(CalendarResponse::getDate)
+                                                .thenComparing(CalendarResponse::getTreatmentId))
                                 .toList();
+
+                return CalendarListMapper.toResponse(responseList);
         }
 
         private record ScheduledTreatmentGroup(LocalDate date, Long treatmentId) {
@@ -123,12 +127,12 @@ public class CalendarService {
                 return YearMonth.of(year, month).atEndOfMonth();
         }
 
-        private AvaliableScheduleResponse buildResponse(Long treatmentId, LocalDate date, List<LocalTime> slots) {
+        private CalendarResponse buildResponse(Long treatmentId, LocalDate date, List<LocalTime> slots) {
                 List<LocalTime> hours = slots.stream()
                                 .sorted(Comparator.naturalOrder())
                                 .toList();
 
-                return new AvaliableScheduleResponse(treatmentId, date.toString(), hours);
+                return new CalendarResponse(treatmentId, date.toString(), hours);
         }
 
         private Map<DayOfWeek, Shift> loadEnabledShiftsByDay(LocalDate startDate, LocalDate endDate) {

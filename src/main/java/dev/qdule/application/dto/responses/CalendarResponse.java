@@ -4,15 +4,15 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AvaliableScheduleResponse {
+public class CalendarResponse {
     private Long treatmentId;
     private String date;
     private List<LocalTime> hours = new ArrayList<>();
 
-    public AvaliableScheduleResponse() {
+    public CalendarResponse() {
     }
 
-    public AvaliableScheduleResponse(Long treatmentId, String date, List<LocalTime> hours) {
+    public CalendarResponse(Long treatmentId, String date, List<LocalTime> hours) {
         this.treatmentId = treatmentId;
         this.date = date;
         setHours(hours);
