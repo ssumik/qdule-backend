@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.application.exception.ConflictException;
+import dev.qdule.application.exception.EmailSendException;
+import dev.qdule.application.exception.ScheduleNotFoundException;
 import dev.qdule.application.exception.ShiftDisabledException;
 import dev.qdule.application.exception.ShiftNotFoundException;
 import dev.qdule.application.exception.TreatmentDisabledException;
@@ -37,7 +39,25 @@ public class GlobalExceptionHandler
                     exception.getMessage(),
                     LocalDateTime.now());
             Log.warn("Client not found: " + exception.getMessage());
-            return Response.status(Response.Status.CONFLICT).entity(error).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(error).build();
+        }
+
+        if (exception instanceof ScheduleNotFoundException) {
+            ErrorResponse error = new ErrorResponse(
+                    Response.Status.NOT_FOUND.getStatusCode(),
+                    exception.getMessage(),
+                    LocalDateTime.now());
+            Log.warn("Schedule not found: " + exception.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(error).build();
+        }
+
+        if (exception instanceof EmailSendException) {
+            ErrorResponse error = new ErrorResponse(
+                    Response.Status.BAD_GATEWAY.getStatusCode(),
+                    exception.getMessage(),
+                    LocalDateTime.now());
+            Log.warn("Email send failed: " + exception.getMessage());
+            return Response.status(Response.Status.BAD_GATEWAY).entity(error).build();
         }
 
         if (exception instanceof ConflictException) {
