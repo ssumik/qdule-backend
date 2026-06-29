@@ -17,23 +17,22 @@ import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.EmailSendException;
 import dev.qdule.application.exception.ScheduleNotFoundException;
 import dev.qdule.domain.model.Client;
+import dev.qdule.domain.model.Config;
 import dev.qdule.domain.model.Schedule;
 import dev.qdule.domain.model.Treatment;
 import dev.qdule.domain.repository.ClientRepository;
+import dev.qdule.domain.repository.ConfigRepository;
 import dev.qdule.domain.repository.ScheduleRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class EmailService {
-    // TODO: REMOVER E MANDAR PARA O CONFIG ENTITY
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    private static final String DEFAULT_LINK_LABEL = "Acesse a area do cliente para alterar seu agendamento.";
 
     private final ClientRepository clientRepository;
+    private final ConfigRepository configRepository;
     private final ScheduleRepository scheduleRepository;
-
-    private String resendFrom = "onboarding@resend.dev";
 
     @ConfigProperty(name = "resend.api-key", defaultValue = "")
     private String resendApiKey;
@@ -41,8 +40,10 @@ public class EmailService {
     @Inject
     public EmailService(
             ClientRepository clientRepository,
+            ConfigRepository configRepository,
             ScheduleRepository scheduleRepository) {
         this.clientRepository = clientRepository;
+        this.configRepository = configRepository;
         this.scheduleRepository = scheduleRepository;
     }
 
@@ -54,13 +55,17 @@ public class EmailService {
                 .orElseThrow(() -> new ScheduleNotFoundException(request.getScheduleId()));
 
         validateScheduleClient(client, schedule);
-        validateEmailConfiguration();
+        var config = configRepository
+                .findCurrent()
+                .orElseThrow(() -> new EmailSendException("Email config is not configured"));
+
+        validateEmailConfiguration(config);
 
         EmailType emailType = resolveEmailType(request);
-        EmailContent emailContent = buildEmailContent(emailType, client, schedule);
+        EmailContent emailContent = buildEmailContent(emailType, client, schedule, config);
 
         CreateEmailOptions emailOptions = CreateEmailOptions.builder()
-                .from(resendFrom)
+                .from(config.getSendEmail())
                 .to(client.getEmail())
                 .subject(emailContent.subject())
                 .text(emailContent.text())
@@ -82,9 +87,13 @@ public class EmailService {
         }
     }
 
-    private void validateEmailConfiguration() {
+    private void validateEmailConfiguration(Config config) {
         if (resendApiKey == null || resendApiKey.isBlank()) {
             throw new EmailSendException("Resend API key is not configured");
+        }
+
+        if (config.getSendEmail() == null || config.getSendEmail().isBlank()) {
+            throw new EmailSendException("Sender email is not configured");
         }
     }
 
@@ -99,27 +108,26 @@ public class EmailService {
     private EmailContent buildEmailContent(
             EmailType emailType,
             Client client,
-            Schedule schedule) {
+            Schedule schedule,
+            Config config) {
         return switch (emailType) {
             case SCHEDULE_CREATED -> new EmailContent(
                     "Confirmacao de agendamento",
-                    buildCreatedText(client, schedule),
-                    buildCreatedHtml(client, schedule));
+                    buildCreatedText(client, schedule, config),
+                    buildCreatedHtml(client, schedule, config));
             case SCHEDULE_RESCHEDULED -> new EmailContent(
                     "Agendamento reagendado",
-                    buildRescheduledText(client, schedule),
-                    buildRescheduledHtml(client, schedule));
+                    buildRescheduledText(client, schedule, config),
+                    buildRescheduledHtml(client, schedule, config));
             case SCHEDULE_CANCELED -> new EmailContent(
                     "Agendamento cancelado",
-                    buildCanceledText(client, schedule),
-                    buildCanceledHtml(client, schedule));
+                    buildCanceledText(client, schedule, config),
+                    buildCanceledHtml(client, schedule, config));
         };
     }
 
-    private String buildCreatedText(Client client, Schedule schedule) {
+    private String buildCreatedText(Client client, Schedule schedule, Config config) {
         String scheduleDetails = buildScheduleDetailsText(client, schedule);
-        // TODO: AJUSTAR
-        String actionLink = DEFAULT_LINK_LABEL;
 
         return """
                 Ola, %s.
@@ -128,37 +136,39 @@ public class EmailService {
 
                 %s
 
-                Reagendar: %s
-                Cancelar: %s
+                %s
                 """.formatted(
                 client.getName(),
                 scheduleDetails,
-                actionLink,
-                actionLink);
+                buildCreatedActionLinksText(config));
     }
 
-    private String buildRescheduledText(Client client, Schedule schedule) {
+    private String buildRescheduledText(Client client, Schedule schedule, Config config) {
         return """
                 Ola, %s.
 
                 Seu agendamento foi reagendado.
 
                 %s
+                %s
                 """.formatted(
                 client.getName(),
-                buildScheduleDetailsText(client, schedule));
+                buildScheduleDetailsText(client, schedule),
+                buildContactLinkText(config));
     }
 
-    private String buildCanceledText(Client client, Schedule schedule) {
+    private String buildCanceledText(Client client, Schedule schedule, Config config) {
         return """
                 Ola, %s.
 
                 Seu agendamento foi cancelado.
 
                 %s
+                %s
                 """.formatted(
                 client.getName(),
-                buildScheduleDetailsText(client, schedule));
+                buildScheduleDetailsText(client, schedule),
+                buildContactLinkText(config));
     }
 
     private String buildScheduleDetailsText(Client client, Schedule schedule) {
@@ -184,7 +194,7 @@ public class EmailService {
                 valueOrEmpty(schedule.getReason()));
     }
 
-    private String buildCreatedHtml(Client client, Schedule schedule) {
+    private String buildCreatedHtml(Client client, Schedule schedule, Config config) {
         return """
                 <p>Ola, %s.</p>
                 <p>Seu agendamento foi criado.</p>
@@ -193,27 +203,31 @@ public class EmailService {
                 """.formatted(
                 escapeHtml(client.getName()),
                 buildScheduleDetailsHtml(client, schedule),
-                buildActionLinksHtml());
+                buildCreatedActionLinksHtml(config));
     }
 
-    private String buildRescheduledHtml(Client client, Schedule schedule) {
+    private String buildRescheduledHtml(Client client, Schedule schedule, Config config) {
         return """
                 <p>Ola, %s.</p>
                 <p>Seu agendamento foi reagendado.</p>
                 %s
+                %s
                 """.formatted(
                 escapeHtml(client.getName()),
-                buildScheduleDetailsHtml(client, schedule));
+                buildScheduleDetailsHtml(client, schedule),
+                buildContactLinkHtml(config));
     }
 
-    private String buildCanceledHtml(Client client, Schedule schedule) {
+    private String buildCanceledHtml(Client client, Schedule schedule, Config config) {
         return """
                 <p>Ola, %s.</p>
                 <p>Seu agendamento foi cancelado.</p>
                 %s
+                %s
                 """.formatted(
                 escapeHtml(client.getName()),
-                buildScheduleDetailsHtml(client, schedule));
+                buildScheduleDetailsHtml(client, schedule),
+                buildContactLinkHtml(config));
     }
 
     private String buildScheduleDetailsHtml(Client client, Schedule schedule) {
@@ -242,14 +256,50 @@ public class EmailService {
                 escapeHtml(valueOrEmpty(schedule.getReason())));
     }
 
-    private String buildActionLinksHtml() {
-        // TODO: AJUSTAR
-        String actionLink = escapeHtml(DEFAULT_LINK_LABEL);
+    private String buildCreatedActionLinksHtml(Config config) {
+        return buildContactLinkHtml(config);
+    }
+
+    private String buildContactLinkHtml(Config config) {
+        return buildLinkHtml(config.getContactLink(), "Entrar em contato");
+    }
+
+    private String buildLinkHtml(String link, String label) {
+        if (link == null || link.isBlank()) {
+            return "";
+        }
 
         return """
-                <p><a href="%s">Reagendar atendimento</a></p>
-                <p><a href="%s">Cancelar atendimento</a></p>
-                """.formatted(actionLink, actionLink);
+                <p><a href="%s">%s</a></p>
+                """.formatted(escapeHtml(link), escapeHtml(label));
+    }
+
+    private String buildCreatedActionLinksText(Config config) {
+        StringBuilder builder = new StringBuilder();
+
+        appendTextLink(builder, "Contato", config.getContactLink());
+
+        return builder.toString();
+    }
+
+    private String buildContactLinkText(Config config) {
+        StringBuilder builder = new StringBuilder();
+
+        appendTextLink(builder, "Contato", config.getContactLink());
+
+        return builder.toString();
+    }
+
+    private void appendTextLink(StringBuilder builder, String label, String link) {
+        if (link == null || link.isBlank()) {
+            return;
+        }
+
+        builder
+                .append(label)
+                .append(": ")
+                .append(link)
+                .append("\n");
     }
 
     private String valueOrEmpty(String value) {
