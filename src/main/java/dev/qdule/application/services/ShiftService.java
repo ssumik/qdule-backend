@@ -2,16 +2,18 @@ package dev.qdule.application.services;
 
 import java.util.Comparator;
 import java.util.List;
-import java.time.LocalDateTime;
+import java.util.Set;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 import dev.qdule.application.dto.requests.ShiftCreateRequest;
 import dev.qdule.application.dto.requests.ShiftUpdateRequest;
-import dev.qdule.application.dto.responses.PageResponse;
+import dev.qdule.application.dto.responses.ShiftListResponse;
 import dev.qdule.application.dto.responses.ShiftResponse;
 import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.ShiftNotFoundException;
 import dev.qdule.application.mapper.ShiftBreakMapper;
+import dev.qdule.application.mapper.ShiftListMapper;
 import dev.qdule.application.mapper.ShiftMapper;
 import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.model.ShiftBreak;
@@ -30,21 +32,10 @@ public class ShiftService {
         this.shiftRepository = shiftRepository;
     }
 
-    public PageResponse<ShiftResponse> getShifts(int page, int size) {
-        var shiftList = shiftRepository.findAll(page, size);
+    public ShiftListResponse getShifts(ShiftStatus status, List<DayOfWeek> days) {
+        var shiftList = shiftRepository.findAll(status, days);
 
-        PageResponse<ShiftResponse> response = new PageResponse<>();
-
-        response.setContent(
-                shiftList.getContent()
-                        .stream()
-                        .map(ShiftMapper::toResponse)
-                        .toList());
-
-        response.setPage(page);
-        response.setSize(size);
-        response.setTotalElements(shiftList.getTotalElements());
-        response.setTotalPages(shiftList.getTotalPages());
+        ShiftListResponse response = ShiftListMapper.toResponse(shiftList);
 
         return response;
     }
