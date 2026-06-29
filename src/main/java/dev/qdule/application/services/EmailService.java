@@ -9,6 +9,7 @@ import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 
+import dev.qdule.application.dto.EmailType;
 import dev.qdule.application.dto.requests.EmailSendRequest;
 import dev.qdule.application.dto.responses.EmailSendResponse;
 import dev.qdule.application.exception.ClientNotFoundException;
@@ -25,7 +26,9 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class EmailService {
+    // TODO: REMOVER E MANDAR PARA O CONFIG ENTITY
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final String DEFAULT_LINK_LABEL = "Acesse a area do cliente para alterar seu agendamento.";
 
     private final ClientRepository clientRepository;
     private final ScheduleRepository scheduleRepository;
@@ -53,17 +56,21 @@ public class EmailService {
         validateScheduleClient(client, schedule);
         validateEmailConfiguration();
 
+        EmailType emailType = resolveEmailType(request);
+        EmailContent emailContent = buildEmailContent(emailType, client, schedule);
+
         CreateEmailOptions emailOptions = CreateEmailOptions.builder()
                 .from(resendFrom)
                 .to(client.getEmail())
-                .subject("Confirmacao de agendamento")
-                .text(buildText(client, schedule))
-                .html(buildHtml(client, schedule))
+                .subject(emailContent.subject())
+                .text(emailContent.text())
+                .html(emailContent.html())
                 .build();
 
         try {
             CreateEmailResponse response = new Resend(resendApiKey).emails().send(emailOptions);
-            return new EmailSendResponse(response.getId(), client.getId(), schedule.getId(), client.getEmail());
+            return new EmailSendResponse(response.getId(), client.getId(), schedule.getId(), client.getEmail(),
+                    emailType);
         } catch (ResendException exception) {
             throw new EmailSendException("Unable to send email with Resend :" + exception.getMessage(), exception);
         }
@@ -81,14 +88,83 @@ public class EmailService {
         }
     }
 
-    private String buildText(Client client, Schedule schedule) {
-        Treatment treatment = schedule.getTreatment();
+    private EmailType resolveEmailType(EmailSendRequest request) {
+        if (request.getEmailType() == null) {
+            return EmailType.SCHEDULE_CREATED;
+        }
+
+        return request.getEmailType();
+    }
+
+    private EmailContent buildEmailContent(
+            EmailType emailType,
+            Client client,
+            Schedule schedule) {
+        return switch (emailType) {
+            case SCHEDULE_CREATED -> new EmailContent(
+                    "Confirmacao de agendamento",
+                    buildCreatedText(client, schedule),
+                    buildCreatedHtml(client, schedule));
+            case SCHEDULE_RESCHEDULED -> new EmailContent(
+                    "Agendamento reagendado",
+                    buildRescheduledText(client, schedule),
+                    buildRescheduledHtml(client, schedule));
+            case SCHEDULE_CANCELED -> new EmailContent(
+                    "Agendamento cancelado",
+                    buildCanceledText(client, schedule),
+                    buildCanceledHtml(client, schedule));
+        };
+    }
+
+    private String buildCreatedText(Client client, Schedule schedule) {
+        String scheduleDetails = buildScheduleDetailsText(client, schedule);
+        // TODO: AJUSTAR
+        String actionLink = DEFAULT_LINK_LABEL;
 
         return """
                 Ola, %s.
 
-                Seguem os dados do seu agendamento:
+                Seu agendamento foi criado.
 
+                %s
+
+                Reagendar: %s
+                Cancelar: %s
+                """.formatted(
+                client.getName(),
+                scheduleDetails,
+                actionLink,
+                actionLink);
+    }
+
+    private String buildRescheduledText(Client client, Schedule schedule) {
+        return """
+                Ola, %s.
+
+                Seu agendamento foi reagendado.
+
+                %s
+                """.formatted(
+                client.getName(),
+                buildScheduleDetailsText(client, schedule));
+    }
+
+    private String buildCanceledText(Client client, Schedule schedule) {
+        return """
+                Ola, %s.
+
+                Seu agendamento foi cancelado.
+
+                %s
+                """.formatted(
+                client.getName(),
+                buildScheduleDetailsText(client, schedule));
+    }
+
+    private String buildScheduleDetailsText(Client client, Schedule schedule) {
+        Treatment treatment = schedule.getTreatment();
+
+        return """
                 Cliente: %s
                 Email: %s
                 Agendamento: %s
@@ -99,7 +175,6 @@ public class EmailService {
                 Motivo: %s
                 """.formatted(
                 client.getName(),
-                client.getName(),
                 client.getEmail(),
                 schedule.getId(),
                 treatment.getName(),
@@ -109,11 +184,42 @@ public class EmailService {
                 valueOrEmpty(schedule.getReason()));
     }
 
-    private String buildHtml(Client client, Schedule schedule) {
+    private String buildCreatedHtml(Client client, Schedule schedule) {
+        return """
+                <p>Ola, %s.</p>
+                <p>Seu agendamento foi criado.</p>
+                %s
+                %s
+                """.formatted(
+                escapeHtml(client.getName()),
+                buildScheduleDetailsHtml(client, schedule),
+                buildActionLinksHtml());
+    }
+
+    private String buildRescheduledHtml(Client client, Schedule schedule) {
+        return """
+                <p>Ola, %s.</p>
+                <p>Seu agendamento foi reagendado.</p>
+                %s
+                """.formatted(
+                escapeHtml(client.getName()),
+                buildScheduleDetailsHtml(client, schedule));
+    }
+
+    private String buildCanceledHtml(Client client, Schedule schedule) {
+        return """
+                <p>Ola, %s.</p>
+                <p>Seu agendamento foi cancelado.</p>
+                %s
+                """.formatted(
+                escapeHtml(client.getName()),
+                buildScheduleDetailsHtml(client, schedule));
+    }
+
+    private String buildScheduleDetailsHtml(Client client, Schedule schedule) {
         Treatment treatment = schedule.getTreatment();
 
         return """
-                <p>Ola, %s.</p>
                 <p>Seguem os dados do seu agendamento:</p>
                 <ul>
                     <li><strong>Cliente:</strong> %s</li>
@@ -127,7 +233,6 @@ public class EmailService {
                 </ul>
                 """.formatted(
                 escapeHtml(client.getName()),
-                escapeHtml(client.getName()),
                 escapeHtml(client.getEmail()),
                 schedule.getId(),
                 escapeHtml(treatment.getName()),
@@ -135,6 +240,16 @@ public class EmailService {
                 DATE_TIME_FORMATTER.format(schedule.getEndDateTime()),
                 schedule.getStatus(),
                 escapeHtml(valueOrEmpty(schedule.getReason())));
+    }
+
+    private String buildActionLinksHtml() {
+        // TODO: AJUSTAR
+        String actionLink = escapeHtml(DEFAULT_LINK_LABEL);
+
+        return """
+                <p><a href="%s">Reagendar atendimento</a></p>
+                <p><a href="%s">Cancelar atendimento</a></p>
+                """.formatted(actionLink, actionLink);
     }
 
     private String valueOrEmpty(String value) {
@@ -148,5 +263,8 @@ public class EmailService {
                 .replace(">", "&gt;")
                 .replace("\"", "&quot;")
                 .replace("'", "&#39;");
+    }
+
+    private record EmailContent(String subject, String text, String html) {
     }
 }
