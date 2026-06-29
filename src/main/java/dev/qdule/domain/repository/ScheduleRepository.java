@@ -20,6 +20,8 @@ public interface ScheduleRepository {
 
     List<Schedule> findBlockingSchedules(LocalDateTime start, LocalDateTime end, List<ScheduleStatus> statuses);
 
+    List<Schedule> findByStatuses(LocalDateTime start, LocalDateTime end, List<ScheduleStatus> statuses);
+
     Schedule save(Schedule schedule);
 
     void removeById(Long id);

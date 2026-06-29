@@ -117,6 +117,28 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
                 .toList();
     }
 
+    @Override
+    public List<Schedule> findByStatuses(
+            LocalDateTime start,
+            LocalDateTime end,
+            List<ScheduleStatus> statuses) {
+        if (statuses == null || statuses.isEmpty()) {
+            return List.of();
+        }
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("start", start);
+        parameters.put("end", end);
+        parameters.put("statuses", statuses);
+
+        return scheduleRepositoryPanache
+                .find("startDateTime < :end and endDateTime > :start and status in :statuses", parameters)
+                .list()
+                .stream()
+                .map(ScheduleEntityMapper::toDomain)
+                .toList();
+    }
+
     private String addToQuery(String query, String aditionalQuery) {
         if (query.equals("")) {
             return aditionalQuery;
