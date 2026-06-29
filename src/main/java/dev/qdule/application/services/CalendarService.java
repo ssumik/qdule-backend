@@ -1,0 +1,243 @@
+package dev.qdule.application.services;
+
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import dev.qdule.application.dto.responses.CalendarListResponse;
+import dev.qdule.application.dto.responses.CalendarResponse;
+import dev.qdule.application.exception.TreatmentDisabledException;
+import dev.qdule.application.exception.TreatmentNotFoundException;
+import dev.qdule.application.mapper.CalendarListMapper;
+import dev.qdule.domain.model.Schedule;
+import dev.qdule.domain.model.ScheduleStatus;
+import dev.qdule.domain.model.Shift;
+import dev.qdule.domain.model.ShiftBreak;
+import dev.qdule.domain.model.Treatment;
+import dev.qdule.domain.model.TreatmentStatus;
+import dev.qdule.domain.repository.ScheduleRepository;
+import dev.qdule.domain.repository.ShiftRepository;
+import dev.qdule.domain.repository.TreatmentRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
+public class CalendarService {
+        private ScheduleRepository scheduleRepository;
+        private TreatmentRepository treatmentRepository;
+        private ShiftRepository shiftRepository;
+
+        @Inject
+        public CalendarService(
+                        ScheduleRepository scheduleRepository,
+                        TreatmentRepository treatmentRepository,
+                        ShiftRepository shiftRepository) {
+                this.scheduleRepository = scheduleRepository;
+                this.treatmentRepository = treatmentRepository;
+                this.shiftRepository = shiftRepository;
+        }
+
+        public CalendarListResponse availableSchedule(
+                        Long treatmentId,
+                        int year,
+                        int month) {
+
+                LocalDate startDate = getStartDate(year, month);
+                LocalDate endDate = getEndDate(year, month);
+
+                var treatment = treatmentRepository.findById(treatmentId)
+                                .orElseThrow(() -> new TreatmentNotFoundException(treatmentId));
+
+                if (treatment.getStatus() == TreatmentStatus.INACTIVE) {
+                        throw new TreatmentDisabledException(treatmentId);
+                }
+
+                List<CalendarResponse> response = new ArrayList<>();
+                Map<DayOfWeek, Shift> shiftsByDay = loadEnabledShiftsByDay(startDate, endDate);
+                Map<LocalDate, List<Schedule>> schedulesByDate = loadBlockingSchedulesByDate(startDate, endDate);
+
+                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                        var shift = shiftsByDay.get(date.getDayOfWeek());
+
+                        if (shift == null) {
+                                continue;
+                        }
+
+                        List<Schedule> schedules = schedulesByDate.getOrDefault(date, List.of());
+                        List<LocalTime> slots = generateCandidateSlots(date, treatment, shift, schedules);
+                        response.add(buildResponse(treatmentId, date, slots));
+                }
+
+                return CalendarListMapper.toResponse(response);
+        }
+
+        public CalendarListResponse scheduledTreatment(
+                        int year,
+                        int month) {
+                LocalDate startDate = getStartDate(year, month);
+                LocalDate endDate = getEndDate(year, month);
+
+                var responseList = scheduleRepository.findByStatuses(
+                                startDate.atStartOfDay(),
+                                endDate.plusDays(1).atStartOfDay(),
+                                List.of(
+                                                ScheduleStatus.SCHEDULED,
+                                                ScheduleStatus.RESCHEDULED))
+                                .stream()
+                                .collect(Collectors.groupingBy(schedule -> new ScheduledTreatmentGroup(
+                                                schedule.getStartDateTime().toLocalDate(),
+                                                schedule.getTreatment().getId())))
+                                .entrySet()
+                                .stream()
+                                .map(entry -> buildResponse(
+                                                entry.getKey().treatmentId(),
+                                                entry.getKey().date(),
+                                                entry.getValue()
+                                                                .stream()
+                                                                .map(schedule -> schedule.getStartDateTime()
+                                                                                .toLocalTime())
+                                                                .toList()))
+                                .sorted(Comparator.comparing(CalendarResponse::getDate)
+                                                .thenComparing(CalendarResponse::getTreatmentId))
+                                .toList();
+
+                return CalendarListMapper.toResponse(responseList);
+        }
+
+        private record ScheduledTreatmentGroup(LocalDate date, Long treatmentId) {
+        }
+
+        private LocalDate getStartDate(int year, int month) {
+                return YearMonth.of(year, month).atDay(1);
+        }
+
+        private LocalDate getEndDate(int year, int month) {
+                return YearMonth.of(year, month).atEndOfMonth();
+        }
+
+        private CalendarResponse buildResponse(Long treatmentId, LocalDate date, List<LocalTime> slots) {
+                List<LocalTime> hours = slots.stream()
+                                .sorted(Comparator.naturalOrder())
+                                .toList();
+
+                return new CalendarResponse(treatmentId, date.toString(), hours);
+        }
+
+        private Map<DayOfWeek, Shift> loadEnabledShiftsByDay(LocalDate startDate, LocalDate endDate) {
+                Set<DayOfWeek> days = new HashSet<>();
+
+                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                        days.add(date.getDayOfWeek());
+                }
+
+                return shiftRepository.findEnabledByDays(days)
+                                .stream()
+                                .collect(Collectors.toMap(Shift::getDayOfWeek, Function.identity()));
+        }
+
+        private Map<LocalDate, List<Schedule>> loadBlockingSchedulesByDate(LocalDate startDate, LocalDate endDate) {
+                LocalDateTime start = startDate.atStartOfDay();
+                LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+
+                Map<LocalDate, List<Schedule>> schedulesByDate = new HashMap<>();
+
+                scheduleRepository.findBlockingSchedules(
+                                start,
+                                end,
+                                List.of(
+                                                ScheduleStatus.SCHEDULED,
+                                                ScheduleStatus.RESCHEDULED,
+                                                ScheduleStatus.PENDING))
+                                .forEach(schedule -> addScheduleToOverlappingDates(
+                                                schedulesByDate,
+                                                schedule,
+                                                startDate,
+                                                endDate));
+
+                return schedulesByDate;
+        }
+
+        private void addScheduleToOverlappingDates(
+                        Map<LocalDate, List<Schedule>> schedulesByDate,
+                        Schedule schedule,
+                        LocalDate startDate,
+                        LocalDate endDate) {
+
+                LocalDate firstDate = schedule.getStartDateTime().toLocalDate().isBefore(startDate)
+                                ? startDate
+                                : schedule.getStartDateTime().toLocalDate();
+                LocalDate lastDate = schedule.getEndDateTime().minusNanos(1).toLocalDate().isAfter(endDate)
+                                ? endDate
+                                : schedule.getEndDateTime().minusNanos(1).toLocalDate();
+
+                for (LocalDate date = firstDate; !date.isAfter(lastDate); date = date.plusDays(1)) {
+                        schedulesByDate.computeIfAbsent(date, ignored -> new ArrayList<>())
+                                        .add(schedule);
+                }
+        }
+
+        private List<LocalTime> generateCandidateSlots(
+                        LocalDate date,
+                        Treatment treatment,
+                        Shift shift,
+                        List<Schedule> schedules) {
+                Duration treatmentDuration = treatment.getDuration();
+                Duration restTime = shift.getRestTimeBetweenAppointments() == null
+                                ? Duration.ZERO
+                                : shift.getRestTimeBetweenAppointments();
+                Duration slotStep = treatmentDuration.plus(restTime);
+
+                List<LocalTime> slots = new ArrayList<>();
+
+                LocalTime cursor = shift.getStartTime();
+                while (!cursor.plus(treatmentDuration).isAfter(shift.getEndTime())) {
+                        LocalTime slotStart = cursor;
+                        LocalTime slotEnd = cursor.plus(treatmentDuration);
+
+                        if (!overlapsBreak(slotStart, slotEnd, shift.getBreaks())
+                                        && !overlapsSchedule(date, slotStart, slotEnd, schedules)) {
+                                slots.add(slotStart);
+                        }
+
+                        cursor = cursor.plus(slotStep);
+                }
+
+                return slots;
+        }
+
+        private boolean overlapsBreak(LocalTime slotStart, LocalTime slotEnd, List<ShiftBreak> breaks) {
+                return breaks.stream()
+                                .anyMatch(shiftBreak -> overlaps(
+                                                slotStart,
+                                                slotEnd,
+                                                shiftBreak.getStartTime(),
+                                                shiftBreak.getEndTime()));
+        }
+
+        private boolean overlapsSchedule(LocalDate date, LocalTime slotStart, LocalTime slotEnd,
+                        List<Schedule> schedules) {
+                LocalDateTime zonedSlotStart = date.atTime(slotStart);
+                LocalDateTime zonedSlotEnd = date.atTime(slotEnd);
+
+                return schedules.stream()
+                                .anyMatch(schedule -> zonedSlotStart.isBefore(schedule.getEndDateTime())
+                                                && zonedSlotEnd.isAfter(schedule.getStartDateTime()));
+        }
+
+        private boolean overlaps(LocalTime firstStart, LocalTime firstEnd, LocalTime secondStart,
+                        LocalTime secondEnd) {
+                return firstStart.isBefore(secondEnd) && firstEnd.isAfter(secondStart);
+        }
+}

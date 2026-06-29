@@ -1,15 +1,14 @@
 package dev.qdule.infra.persistence.repository;
 
 import java.time.DayOfWeek;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import dev.qdule.application.dto.responses.PageResponse;
-import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.ShiftNotFoundException;
 import dev.qdule.domain.model.Shift;
-import dev.qdule.domain.model.ShiftBreak;
+import dev.qdule.domain.model.ShiftStatus;
 import dev.qdule.domain.repository.ShiftRepository;
 import dev.qdule.infra.mapper.ShiftEntityMapper;
 import dev.qdule.infra.persistence.panache.ShiftRepositoryPanache;
@@ -60,12 +59,15 @@ public class ShiftRepositoryImpl implements ShiftRepository {
                 .toList());
         pageResponse.setPage(page);
         pageResponse.setSize(size);
-        pageResponse.setTotalElements(shiftRepositoryPanache
-                .findAll().count());
-        pageResponse.setTotalPages(shiftRepositoryPanache.getEntityManager()
-                .createQuery("SELECT COUNT(s) FROM ShiftEntity s", Long.class)
-                .getSingleResult()
-                .intValue() / size);
+        long totalElements = shiftRepositoryPanache
+                .findAll()
+                .count();
+
+        pageResponse.setTotalElements(totalElements);
+
+        var pages = (long) Math.ceil(totalElements / size);
+
+        pageResponse.setTotalPages(pages + 1);
 
         return pageResponse;
     }
@@ -76,5 +78,19 @@ public class ShiftRepositoryImpl implements ShiftRepository {
                 .find("dayOfWeek = ?1", dayOfWeek)
                 .firstResultOptional()
                 .map(ShiftEntityMapper::toDomain);
+    }
+
+    @Override
+    public List<Shift> findEnabledByDays(Set<DayOfWeek> days) {
+        if (days == null || days.isEmpty()) {
+            return List.of();
+        }
+
+        return shiftRepositoryPanache
+                .find("dayOfWeek in ?1 and status = ?2", days, ShiftStatus.ENABLED)
+                .list()
+                .stream()
+                .map(ShiftEntityMapper::toDomain)
+                .toList();
     }
 }

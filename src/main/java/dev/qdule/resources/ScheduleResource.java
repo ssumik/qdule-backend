@@ -2,7 +2,6 @@ package dev.qdule.resources;
 
 import dev.qdule.application.dto.requests.ScheduleCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleUpdateRequest;
-import dev.qdule.application.dto.responses.AvaliableScheduleResponse;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ScheduleResponse;
 import dev.qdule.application.services.ScheduleService;
@@ -22,9 +21,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDateTime;
-import java.time.LocalDate;
-import java.util.List;
-
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -64,26 +60,6 @@ public class ScheduleResource {
                 start,
                 end,
                 status);
-        return Response.ok().entity(response).build();
-    }
-
-    @GET
-    @Path("/available")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Parameters({
-            @Parameter(name = "treatmentId", in = ParameterIn.QUERY, required = true),
-            @Parameter(name = "startDate", in = ParameterIn.QUERY, required = true),
-            @Parameter(name = "endDate", in = ParameterIn.QUERY, required = true),
-    })
-    @APIResponse(responseCode = "200", description = "Avaliable times to schedule", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = PageResponse.class)))
-    public Response availableSchedule(
-            @QueryParam("treatmentId") Long treatmentId,
-            @QueryParam("startDate") LocalDate startDate,
-            @QueryParam("endDate") LocalDate endDate) {
-        List<AvaliableScheduleResponse> response = scheduleService.availableSchedule(
-                treatmentId,
-                startDate,
-                endDate);
         return Response.ok().entity(response).build();
     }
 

@@ -1,18 +1,11 @@
 package dev.qdule.application.services;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 import dev.qdule.application.dto.requests.ScheduleCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleUpdateRequest;
-import dev.qdule.application.dto.responses.AvaliableScheduleResponse;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ScheduleResponse;
 import dev.qdule.application.exception.ClientNotFoundException;
@@ -20,17 +13,14 @@ import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.ScheduleNotFoundException;
 import dev.qdule.application.exception.ShiftDisabledException;
 import dev.qdule.application.exception.ShiftNotFoundException;
-import dev.qdule.application.exception.TreatmentDisabledException;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.mapper.ScheduleMapper;
 import dev.qdule.domain.model.Client;
 import dev.qdule.domain.model.Schedule;
 import dev.qdule.domain.model.ScheduleStatus;
 import dev.qdule.domain.model.Shift;
-import dev.qdule.domain.model.ShiftBreak;
 import dev.qdule.domain.model.ShiftStatus;
 import dev.qdule.domain.model.Treatment;
-import dev.qdule.domain.model.TreatmentStatus;
 import dev.qdule.domain.repository.ClientRepository;
 import dev.qdule.domain.repository.ScheduleRepository;
 import dev.qdule.domain.repository.ShiftRepository;
@@ -88,115 +78,6 @@ public class ScheduleService {
                 Schedule schedule = scheduleRepository.findById(id)
                                 .orElseThrow(() -> new ScheduleNotFoundException(id));
                 return ScheduleMapper.toResponse(schedule);
-        }
-
-        public List<AvaliableScheduleResponse> availableSchedule(
-                        Long treatmentId,
-                        LocalDate startDate,
-                        LocalDate endDate) {
-
-                var treatment = treatmentRepository.findById(treatmentId)
-                                .orElseThrow(() -> new TreatmentNotFoundException(treatmentId));
-
-                if (treatment.getStatus() == TreatmentStatus.INACTIVE) {
-                        throw new TreatmentDisabledException(treatmentId);
-                }
-
-                List<AvaliableScheduleResponse> response = new ArrayList<>();
-
-                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-                        var shift = shiftRepository.findByDay(date.getDayOfWeek())
-                                        .filter(item -> item.getStatus() != ShiftStatus.DISABLED)
-                                        .orElse(null);
-
-                        if (shift == null) {
-                                continue;
-                        }
-
-                        List<Schedule> schedules = loadSchedules(date);
-                        for (Schedule schedule : schedules) {
-                                System.out.println(schedule.getId());
-                        }
-                        List<LocalTime> slots = generateCandidateSlots(date, treatment, shift, schedules);
-                        response.add(buildResponse(treatmentId, date, slots));
-                }
-
-                return response;
-        }
-
-        private AvaliableScheduleResponse buildResponse(Long treatmentId, LocalDate date, List<LocalTime> slots) {
-                List<LocalTime> hours = slots.stream()
-                                .sorted(Comparator.naturalOrder())
-                                .toList();
-
-                return new AvaliableScheduleResponse(treatmentId, date.toString(), hours);
-        }
-
-        private List<Schedule> loadSchedules(LocalDate date) {
-                LocalDateTime start = date.atStartOfDay();
-                LocalDateTime end = date.plusDays(1).atStartOfDay();
-
-                List<Schedule> schedules = new ArrayList<>();
-                schedules.addAll(scheduleRepository.findAll(1, Integer.MAX_VALUE, start, end, ScheduleStatus.SCHEDULED)
-                                .getContent());
-                schedules.addAll(
-                                scheduleRepository.findAll(1, Integer.MAX_VALUE, start, end, ScheduleStatus.RESCHEDULED)
-                                                .getContent());
-
-                return schedules;
-        }
-
-        private List<LocalTime> generateCandidateSlots(
-                        LocalDate date,
-                        Treatment treatment,
-                        Shift shift,
-                        List<Schedule> schedules) {
-                Duration treatmentDuration = treatment.getDuration();
-                Duration restTime = shift.getRestTimeBetweenAppointments() == null
-                                ? Duration.ZERO
-                                : shift.getRestTimeBetweenAppointments();
-                Duration slotStep = treatmentDuration.plus(restTime);
-
-                List<LocalTime> slots = new ArrayList<>();
-
-                LocalTime cursor = shift.getStartTime();
-                while (!cursor.plus(treatmentDuration).isAfter(shift.getEndTime())) {
-                        LocalTime slotStart = cursor;
-                        LocalTime slotEnd = cursor.plus(treatmentDuration);
-
-                        if (!overlapsBreak(slotStart, slotEnd, shift.getBreaks())
-                                        && !overlapsSchedule(date, slotStart, slotEnd, schedules)) {
-                                slots.add(slotStart);
-                        }
-
-                        cursor = cursor.plus(slotStep);
-                }
-
-                return slots;
-        }
-
-        private boolean overlapsBreak(LocalTime slotStart, LocalTime slotEnd, List<ShiftBreak> breaks) {
-                return breaks.stream()
-                                .anyMatch(shiftBreak -> overlaps(
-                                                slotStart,
-                                                slotEnd,
-                                                shiftBreak.getStartTime(),
-                                                shiftBreak.getEndTime()));
-        }
-
-        private boolean overlapsSchedule(LocalDate date, LocalTime slotStart, LocalTime slotEnd,
-                        List<Schedule> schedules) {
-                LocalDateTime zonedSlotStart = date.atTime(slotStart);
-                LocalDateTime zonedSlotEnd = date.atTime(slotEnd);
-
-                return schedules.stream()
-                                .anyMatch(schedule -> zonedSlotStart.isBefore(schedule.getEndDateTime())
-                                                && zonedSlotEnd.isAfter(schedule.getStartDateTime()));
-        }
-
-        private boolean overlaps(LocalTime firstStart, LocalTime firstEnd, LocalTime secondStart,
-                        LocalTime secondEnd) {
-                return firstStart.isBefore(secondEnd) && firstEnd.isAfter(secondStart);
         }
 
         @Transactional
