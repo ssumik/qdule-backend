@@ -1,6 +1,7 @@
 package dev.qdule.domain.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import dev.qdule.application.dto.responses.PageResponse;
@@ -16,6 +17,8 @@ public interface ScheduleRepository {
             LocalDateTime start,
             LocalDateTime end,
             ScheduleStatus status);
+
+    List<Schedule> findBlockingSchedules(LocalDateTime start, LocalDateTime end, List<ScheduleStatus> statuses);
 
     Schedule save(Schedule schedule);
 

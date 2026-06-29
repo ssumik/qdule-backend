@@ -1,8 +1,8 @@
 package dev.qdule.infra.persistence.repository;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -82,13 +82,39 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
 
         pageResponse.setSize(size);
 
-        pageResponse.setTotalElements(scheduleRepositoryPanache
-                .find(query, parameters).count());
+        long totalElements = scheduleRepositoryPanache
+                .find(query, parameters)
+                .count();
 
-        pageResponse.setTotalPages(scheduleRepositoryPanache
-                .find(query, parameters).count() / size);
+        pageResponse.setTotalElements(totalElements);
+
+        var pages = (long) Math.ceil(totalElements / size);
+
+        pageResponse.setTotalPages(pages + 1);
 
         return pageResponse;
+    }
+
+    @Override
+    public List<Schedule> findBlockingSchedules(
+            LocalDateTime start,
+            LocalDateTime end,
+            List<ScheduleStatus> statuses) {
+        if (statuses == null || statuses.isEmpty()) {
+            return List.of();
+        }
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("start", start);
+        parameters.put("end", end);
+        parameters.put("statuses", statuses);
+
+        return scheduleRepositoryPanache
+                .find("startDateTime < :end and endDateTime > :start and status in :statuses", parameters)
+                .list()
+                .stream()
+                .map(ScheduleEntityMapper::toDomain)
+                .toList();
     }
 
     private String addToQuery(String query, String aditionalQuery) {

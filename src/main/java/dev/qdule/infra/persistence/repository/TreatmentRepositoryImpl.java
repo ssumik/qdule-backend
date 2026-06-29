@@ -59,7 +59,7 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
         }
 
         if (text != null && !text.equals("")) {
-            query = addToQuery(query, "name like :text or description like :text");
+            query = addToQuery(query, "LOWER(name) like LOWER(:text) or LOWER(description) like LOWER(:text)");
             parameters.put("text", "%" + text + "%");
         }
 
@@ -75,13 +75,15 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
 
         pageResponse.setSize(size);
 
-        pageResponse.setTotalElements(treatmentRepositoryPanache
+        long totalElements = treatmentRepositoryPanache
                 .find(query, parameters)
-                .count());
+                .count();
 
-        pageResponse.setTotalPages(treatmentRepositoryPanache
-                .find(query, parameters)
-                .count() / size);
+        pageResponse.setTotalElements(totalElements);
+
+        var pages = (long) Math.ceil(totalElements / size);
+
+        pageResponse.setTotalPages(pages + 1);
 
         return pageResponse;
     }

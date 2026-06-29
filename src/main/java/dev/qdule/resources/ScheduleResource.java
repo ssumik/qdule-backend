@@ -67,6 +67,7 @@ public class ScheduleResource {
         return Response.ok().entity(response).build();
     }
 
+    // THIS GET SHOULD BE IN A CALENDAR RESOURCE
     @GET
     @Path("/available")
     @Produces(MediaType.APPLICATION_JSON)

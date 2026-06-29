@@ -6,9 +6,16 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.Duration;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import dev.qdule.application.dto.requests.ScheduleCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleUpdateRequest;
@@ -103,20 +110,17 @@ public class ScheduleService {
                 }
 
                 List<AvaliableScheduleResponse> response = new ArrayList<>();
+                Map<DayOfWeek, Shift> shiftsByDay = loadEnabledShiftsByDay(startDate, endDate);
+                Map<LocalDate, List<Schedule>> schedulesByDate = loadBlockingSchedulesByDate(startDate, endDate);
 
                 for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-                        var shift = shiftRepository.findByDay(date.getDayOfWeek())
-                                        .filter(item -> item.getStatus() != ShiftStatus.DISABLED)
-                                        .orElse(null);
+                        var shift = shiftsByDay.get(date.getDayOfWeek());
 
                         if (shift == null) {
                                 continue;
                         }
 
-                        List<Schedule> schedules = loadSchedules(date);
-                        for (Schedule schedule : schedules) {
-                                System.out.println(schedule.getId());
-                        }
+                        List<Schedule> schedules = schedulesByDate.getOrDefault(date, List.of());
                         List<LocalTime> slots = generateCandidateSlots(date, treatment, shift, schedules);
                         response.add(buildResponse(treatmentId, date, slots));
                 }
@@ -132,18 +136,57 @@ public class ScheduleService {
                 return new AvaliableScheduleResponse(treatmentId, date.toString(), hours);
         }
 
-        private List<Schedule> loadSchedules(LocalDate date) {
-                LocalDateTime start = date.atStartOfDay();
-                LocalDateTime end = date.plusDays(1).atStartOfDay();
+        private Map<DayOfWeek, Shift> loadEnabledShiftsByDay(LocalDate startDate, LocalDate endDate) {
+                Set<DayOfWeek> days = new HashSet<>();
 
-                List<Schedule> schedules = new ArrayList<>();
-                schedules.addAll(scheduleRepository.findAll(1, Integer.MAX_VALUE, start, end, ScheduleStatus.SCHEDULED)
-                                .getContent());
-                schedules.addAll(
-                                scheduleRepository.findAll(1, Integer.MAX_VALUE, start, end, ScheduleStatus.RESCHEDULED)
-                                                .getContent());
+                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                        days.add(date.getDayOfWeek());
+                }
 
-                return schedules;
+                return shiftRepository.findEnabledByDays(days)
+                                .stream()
+                                .collect(Collectors.toMap(Shift::getDayOfWeek, Function.identity()));
+        }
+
+        private Map<LocalDate, List<Schedule>> loadBlockingSchedulesByDate(LocalDate startDate, LocalDate endDate) {
+                LocalDateTime start = startDate.atStartOfDay();
+                LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+
+                Map<LocalDate, List<Schedule>> schedulesByDate = new HashMap<>();
+
+                scheduleRepository.findBlockingSchedules(
+                                start,
+                                end,
+                                List.of(
+                                                ScheduleStatus.SCHEDULED,
+                                                ScheduleStatus.RESCHEDULED,
+                                                ScheduleStatus.PENDING))
+                                .forEach(schedule -> addScheduleToOverlappingDates(
+                                                schedulesByDate,
+                                                schedule,
+                                                startDate,
+                                                endDate));
+
+                return schedulesByDate;
+        }
+
+        private void addScheduleToOverlappingDates(
+                        Map<LocalDate, List<Schedule>> schedulesByDate,
+                        Schedule schedule,
+                        LocalDate startDate,
+                        LocalDate endDate) {
+
+                LocalDate firstDate = schedule.getStartDateTime().toLocalDate().isBefore(startDate)
+                                ? startDate
+                                : schedule.getStartDateTime().toLocalDate();
+                LocalDate lastDate = schedule.getEndDateTime().minusNanos(1).toLocalDate().isAfter(endDate)
+                                ? endDate
+                                : schedule.getEndDateTime().minusNanos(1).toLocalDate();
+
+                for (LocalDate date = firstDate; !date.isAfter(lastDate); date = date.plusDays(1)) {
+                        schedulesByDate.computeIfAbsent(date, ignored -> new ArrayList<>())
+                                        .add(schedule);
+                }
         }
 
         private List<LocalTime> generateCandidateSlots(

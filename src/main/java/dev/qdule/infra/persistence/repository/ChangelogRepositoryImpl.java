@@ -60,12 +60,15 @@ public class ChangelogRepositoryImpl implements ChangelogRepository {
                 .toList());
         pageResponse.setPage(page);
         pageResponse.setSize(size);
-        pageResponse.setTotalElements(changelogRepositoryPanache
-                .findAll().count());
-        pageResponse.setTotalPages(changelogRepositoryPanache.getEntityManager()
-                .createQuery("SELECT COUNT(c) FROM ChangelogEntity c", Long.class)
-                .getSingleResult()
-                .intValue() / size);
+        long totalElements = changelogRepositoryPanache
+                .findAll()
+                .count();
+
+        pageResponse.setTotalElements(totalElements);
+
+        var pages = (long) Math.ceil(totalElements / size);
+
+        pageResponse.setTotalPages(pages + 1);
 
         return pageResponse;
     }

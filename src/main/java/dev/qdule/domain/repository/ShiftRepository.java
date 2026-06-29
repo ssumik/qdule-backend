@@ -1,13 +1,17 @@
 package dev.qdule.domain.repository;
 
 import java.time.DayOfWeek;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.domain.model.Shift;
 
 public interface ShiftRepository {
     Optional<Shift> findByDay(DayOfWeek dayOfWeek);
+
+    List<Shift> findEnabledByDays(Set<DayOfWeek> days);
 
     Optional<Shift> findById(Long id);
 
