@@ -1,34 +1,23 @@
-package dev.qdule.infra.persistence.entities;
+package dev.qdule.domain.model;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "schedule_exceptions")
-public class ScheduleExceptionEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ScheduleException {
     private Long id;
-
-    @Column(name = "start_date_time", nullable = false)
     private LocalDateTime startDateTime;
-
-    @Column(name = "end_date_time", nullable = false)
     private LocalDateTime endDateTime;
-
-    @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;
 
-    public ScheduleExceptionEntity() {
+    public ScheduleException() {
     }
 
-    public ScheduleExceptionEntity(Long id, LocalDateTime startDateTime, LocalDateTime endDateTime, String reason) {
+    public ScheduleException(LocalDateTime startDateTime, LocalDateTime endDateTime, String reason) {
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.reason = reason;
+    }
+
+    public ScheduleException(Long id, LocalDateTime startDateTime, LocalDateTime endDateTime, String reason) {
         this.id = id;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;

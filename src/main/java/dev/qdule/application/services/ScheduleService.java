@@ -2,7 +2,6 @@ package dev.qdule.application.services;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import dev.qdule.application.dto.requests.ScheduleCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleUpdateRequest;
@@ -22,6 +21,7 @@ import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.model.ShiftStatus;
 import dev.qdule.domain.model.Treatment;
 import dev.qdule.domain.repository.ClientRepository;
+import dev.qdule.domain.repository.ScheduleExceptionRepository;
 import dev.qdule.domain.repository.ScheduleRepository;
 import dev.qdule.domain.repository.ShiftRepository;
 import dev.qdule.domain.repository.TreatmentRepository;
@@ -31,18 +31,23 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ScheduleService {
+        private static final ZoneId SCHEDULE_ZONE = ZoneId.of("America/Sao_Paulo");
+
         private ScheduleRepository scheduleRepository;
+        private ScheduleExceptionRepository scheduleExceptionRepository;
         private TreatmentRepository treatmentRepository;
         private ClientRepository clientRepository;
         private ShiftRepository shiftRepository;
 
         @Inject
         public ScheduleService(ScheduleRepository scheduleRepository, TreatmentRepository treatmentRepository,
-                        ClientRepository clientRepository, ShiftRepository shiftRepository) {
+                        ClientRepository clientRepository, ShiftRepository shiftRepository,
+                        ScheduleExceptionRepository scheduleExceptionRepository) {
                 this.scheduleRepository = scheduleRepository;
                 this.treatmentRepository = treatmentRepository;
                 this.clientRepository = clientRepository;
                 this.shiftRepository = shiftRepository;
+                this.scheduleExceptionRepository = scheduleExceptionRepository;
         }
 
         public PageResponse<ScheduleResponse> getSchedules(
@@ -103,6 +108,7 @@ public class ScheduleService {
 
                 validateScheduleDate(schedule);
                 validateShift(shift, schedule);
+                validateScheduleException(schedule);
                 validateScheduledPeriod(schedule);
 
                 var savedSchedule = scheduleRepository.save(schedule);
@@ -121,11 +127,10 @@ public class ScheduleService {
                                         "The schedule end date must be after the start date");
                 }
 
-                ZonedDateTime limit = ZonedDateTime.now(
-                                ZoneId.of("America/Sao_Paulo"))
+                LocalDateTime limit = LocalDateTime.now(SCHEDULE_ZONE)
                                 .plusMonths(3);
 
-                if (schedule.getStartDateTime().isAfter(limit.toLocalDateTime())) {
+                if (schedule.getStartDateTime().isAfter(limit)) {
                         throw new ConflictException(
                                         "The schedule start date cannot be more than 3 months in the future");
                 }
@@ -176,6 +181,14 @@ public class ScheduleService {
                 }
         }
 
+        private void validateScheduleException(Schedule schedule) {
+                if (scheduleExceptionRepository.existsOverlapping(
+                                schedule.getStartDateTime(),
+                                schedule.getEndDateTime())) {
+                        throw new ConflictException("The schedule time conflicts with a schedule exception");
+                }
+        }
+
         private boolean isPlannedSchedule(ScheduleStatus status) {
                 return status == ScheduleStatus.SCHEDULED || status == ScheduleStatus.RESCHEDULED;
         }
@@ -197,6 +210,7 @@ public class ScheduleService {
 
                 validateScheduleDate(schedule);
                 validateShift(shift, schedule);
+                validateScheduleException(schedule);
                 validateScheduledPeriod(schedule);
 
                 var savedSchedule = scheduleRepository.save(schedule);

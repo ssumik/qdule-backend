@@ -22,11 +22,13 @@ import dev.qdule.application.exception.TreatmentDisabledException;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.mapper.CalendarListMapper;
 import dev.qdule.domain.model.Schedule;
+import dev.qdule.domain.model.ScheduleException;
 import dev.qdule.domain.model.ScheduleStatus;
 import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.model.ShiftBreak;
 import dev.qdule.domain.model.Treatment;
 import dev.qdule.domain.model.TreatmentStatus;
+import dev.qdule.domain.repository.ScheduleExceptionRepository;
 import dev.qdule.domain.repository.ScheduleRepository;
 import dev.qdule.domain.repository.ShiftRepository;
 import dev.qdule.domain.repository.TreatmentRepository;
@@ -36,15 +38,18 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class CalendarService {
         private ScheduleRepository scheduleRepository;
+        private ScheduleExceptionRepository scheduleExceptionRepository;
         private TreatmentRepository treatmentRepository;
         private ShiftRepository shiftRepository;
 
         @Inject
         public CalendarService(
                         ScheduleRepository scheduleRepository,
+                        ScheduleExceptionRepository scheduleExceptionRepository,
                         TreatmentRepository treatmentRepository,
                         ShiftRepository shiftRepository) {
                 this.scheduleRepository = scheduleRepository;
+                this.scheduleExceptionRepository = scheduleExceptionRepository;
                 this.treatmentRepository = treatmentRepository;
                 this.shiftRepository = shiftRepository;
         }
@@ -67,6 +72,8 @@ public class CalendarService {
                 List<CalendarResponse> response = new ArrayList<>();
                 Map<DayOfWeek, Shift> shiftsByDay = loadEnabledShiftsByDay(startDate, endDate);
                 Map<LocalDate, List<Schedule>> schedulesByDate = loadBlockingSchedulesByDate(startDate, endDate);
+                Map<LocalDate, List<ScheduleException>> exceptionsByDate = loadBlockingExceptionsByDate(startDate,
+                                endDate);
 
                 for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
                         var shift = shiftsByDay.get(date.getDayOfWeek());
@@ -76,7 +83,8 @@ public class CalendarService {
                         }
 
                         List<Schedule> schedules = schedulesByDate.getOrDefault(date, List.of());
-                        List<LocalTime> slots = generateCandidateSlots(date, treatment, shift, schedules);
+                        List<ScheduleException> exceptions = exceptionsByDate.getOrDefault(date, List.of());
+                        List<LocalTime> slots = generateCandidateSlots(date, treatment, shift, schedules, exceptions);
                         response.add(buildResponse(treatmentId, date, slots));
                 }
 
@@ -169,6 +177,23 @@ public class CalendarService {
                 return schedulesByDate;
         }
 
+        private Map<LocalDate, List<ScheduleException>> loadBlockingExceptionsByDate(LocalDate startDate,
+                        LocalDate endDate) {
+                LocalDateTime start = startDate.atStartOfDay();
+                LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+
+                Map<LocalDate, List<ScheduleException>> exceptionsByDate = new HashMap<>();
+
+                scheduleExceptionRepository.findBlockingExceptions(start, end)
+                                .forEach(scheduleException -> addExceptionToOverlappingDates(
+                                                exceptionsByDate,
+                                                scheduleException,
+                                                startDate,
+                                                endDate));
+
+                return exceptionsByDate;
+        }
+
         private void addScheduleToOverlappingDates(
                         Map<LocalDate, List<Schedule>> schedulesByDate,
                         Schedule schedule,
@@ -188,11 +213,31 @@ public class CalendarService {
                 }
         }
 
+        private void addExceptionToOverlappingDates(
+                        Map<LocalDate, List<ScheduleException>> exceptionsByDate,
+                        ScheduleException scheduleException,
+                        LocalDate startDate,
+                        LocalDate endDate) {
+
+                LocalDate firstDate = scheduleException.getStartDateTime().toLocalDate().isBefore(startDate)
+                                ? startDate
+                                : scheduleException.getStartDateTime().toLocalDate();
+                LocalDate lastDate = scheduleException.getEndDateTime().minusNanos(1).toLocalDate().isAfter(endDate)
+                                ? endDate
+                                : scheduleException.getEndDateTime().minusNanos(1).toLocalDate();
+
+                for (LocalDate date = firstDate; !date.isAfter(lastDate); date = date.plusDays(1)) {
+                        exceptionsByDate.computeIfAbsent(date, ignored -> new ArrayList<>())
+                                        .add(scheduleException);
+                }
+        }
+
         private List<LocalTime> generateCandidateSlots(
                         LocalDate date,
                         Treatment treatment,
                         Shift shift,
-                        List<Schedule> schedules) {
+                        List<Schedule> schedules,
+                        List<ScheduleException> exceptions) {
                 Duration treatmentDuration = treatment.getDuration();
                 Duration restTime = shift.getRestTimeBetweenAppointments() == null
                                 ? Duration.ZERO
@@ -207,7 +252,8 @@ public class CalendarService {
                         LocalTime slotEnd = cursor.plus(treatmentDuration);
 
                         if (!overlapsBreak(slotStart, slotEnd, shift.getBreaks())
-                                        && !overlapsSchedule(date, slotStart, slotEnd, schedules)) {
+                                        && !overlapsSchedule(date, slotStart, slotEnd, schedules)
+                                        && !overlapsScheduleException(date, slotStart, slotEnd, exceptions)) {
                                 slots.add(slotStart);
                         }
 
@@ -228,12 +274,23 @@ public class CalendarService {
 
         private boolean overlapsSchedule(LocalDate date, LocalTime slotStart, LocalTime slotEnd,
                         List<Schedule> schedules) {
-                LocalDateTime zonedSlotStart = date.atTime(slotStart);
-                LocalDateTime zonedSlotEnd = date.atTime(slotEnd);
+                LocalDateTime slotStartDateTime = date.atTime(slotStart);
+                LocalDateTime slotEndDateTime = date.atTime(slotEnd);
 
                 return schedules.stream()
-                                .anyMatch(schedule -> zonedSlotStart.isBefore(schedule.getEndDateTime())
-                                                && zonedSlotEnd.isAfter(schedule.getStartDateTime()));
+                                .anyMatch(schedule -> slotStartDateTime.isBefore(schedule.getEndDateTime())
+                                                && slotEndDateTime.isAfter(schedule.getStartDateTime()));
+        }
+
+        private boolean overlapsScheduleException(LocalDate date, LocalTime slotStart, LocalTime slotEnd,
+                        List<ScheduleException> exceptions) {
+                LocalDateTime slotStartDateTime = date.atTime(slotStart);
+                LocalDateTime slotEndDateTime = date.atTime(slotEnd);
+
+                return exceptions.stream()
+                                .anyMatch(scheduleException -> slotStartDateTime
+                                                .isBefore(scheduleException.getEndDateTime())
+                                                && slotEndDateTime.isAfter(scheduleException.getStartDateTime()));
         }
 
         private boolean overlaps(LocalTime firstStart, LocalTime firstEnd, LocalTime secondStart,
