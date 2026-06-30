@@ -1,6 +1,8 @@
 package dev.qdule.application.services;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 
 import dev.qdule.application.dto.requests.ScheduleExceptionCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleExceptionUpdateRequest;
@@ -8,8 +10,10 @@ import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ScheduleExceptionResponse;
 import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.ScheduleExceptionNotFoundException;
+import dev.qdule.application.mapper.ScheduleExceptionBreakMapper;
 import dev.qdule.application.mapper.ScheduleExceptionMapper;
 import dev.qdule.domain.model.ScheduleException;
+import dev.qdule.domain.model.ScheduleExceptionBreak;
 import dev.qdule.domain.repository.ScheduleExceptionRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -53,10 +57,17 @@ public class ScheduleExceptionService {
     public ScheduleExceptionResponse createScheduleException(ScheduleExceptionCreateRequest request) {
         validatePeriod(request.getStartDateTime(), request.getEndDateTime());
 
+        var breaks = request.getBreaks().stream()
+                .map(ScheduleExceptionBreakMapper::toDomain)
+                .toList();
+
+        validateBreaks(breaks, request.getStartDateTime(), request.getEndDateTime());
+
         ScheduleException scheduleException = new ScheduleException(
                 request.getStartDateTime(),
                 request.getEndDateTime(),
-                request.getReason());
+                request.getReason(),
+                breaks);
 
         var savedScheduleException = scheduleExceptionRepository.save(scheduleException);
 
@@ -73,6 +84,12 @@ public class ScheduleExceptionService {
         scheduleException.setStartDateTime(request.getStartDateTime());
         scheduleException.setEndDateTime(request.getEndDateTime());
         scheduleException.setReason(request.getReason());
+        scheduleException.setBreaks(request.getBreaks().stream()
+                .map(ScheduleExceptionBreakMapper::toDomain)
+                .toList());
+
+        validateBreaks(scheduleException.getBreaks(), scheduleException.getStartDateTime(),
+                scheduleException.getEndDateTime());
 
         var savedScheduleException = scheduleExceptionRepository.save(scheduleException);
 
@@ -91,6 +108,43 @@ public class ScheduleExceptionService {
 
         if (!endDateTime.isAfter(startDateTime)) {
             throw new ConflictException("The schedule exception end date must be after the start date");
+        }
+    }
+
+    private void validateBreaks(List<ScheduleExceptionBreak> breaks, LocalDateTime startDateTime,
+            LocalDateTime endDateTime) {
+        if (breaks == null || breaks.isEmpty()) {
+            return;
+        }
+
+        var sortedBreaks = breaks.stream()
+                .peek(scheduleExceptionBreak -> validateBreakRange(scheduleExceptionBreak, startDateTime, endDateTime))
+                .sorted(Comparator.comparing(ScheduleExceptionBreak::getStartDateTime))
+                .toList();
+
+        for (int index = 1; index < sortedBreaks.size(); index++) {
+            ScheduleExceptionBreak previous = sortedBreaks.get(index - 1);
+            ScheduleExceptionBreak current = sortedBreaks.get(index);
+
+            if (current.getStartDateTime().isBefore(previous.getEndDateTime())) {
+                throw new ConflictException("Schedule exception breaks cannot overlap");
+            }
+        }
+    }
+
+    private void validateBreakRange(ScheduleExceptionBreak scheduleExceptionBreak, LocalDateTime startDateTime,
+            LocalDateTime endDateTime) {
+        if (scheduleExceptionBreak.getStartDateTime() == null || scheduleExceptionBreak.getEndDateTime() == null) {
+            throw new ConflictException("Schedule exception break start date and end date are required");
+        }
+
+        if (!scheduleExceptionBreak.getEndDateTime().isAfter(scheduleExceptionBreak.getStartDateTime())) {
+            throw new ConflictException("Schedule exception break end date must be after the start date");
+        }
+
+        if (scheduleExceptionBreak.getStartDateTime().isBefore(startDateTime)
+                || scheduleExceptionBreak.getEndDateTime().isAfter(endDateTime)) {
+            throw new ConflictException("Schedule exception breaks must be inside start date and end date");
         }
     }
 }

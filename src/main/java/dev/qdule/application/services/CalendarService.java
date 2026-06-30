@@ -23,6 +23,7 @@ import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.mapper.CalendarListMapper;
 import dev.qdule.domain.model.Schedule;
 import dev.qdule.domain.model.ScheduleException;
+import dev.qdule.domain.model.ScheduleExceptionBreak;
 import dev.qdule.domain.model.ScheduleStatus;
 import dev.qdule.domain.model.Shift;
 import dev.qdule.domain.model.ShiftBreak;
@@ -288,9 +289,30 @@ public class CalendarService {
                 LocalDateTime slotEndDateTime = date.atTime(slotEnd);
 
                 return exceptions.stream()
-                                .anyMatch(scheduleException -> slotStartDateTime
-                                                .isBefore(scheduleException.getEndDateTime())
-                                                && slotEndDateTime.isAfter(scheduleException.getStartDateTime()));
+                                .anyMatch(scheduleException -> overlapsScheduleException(
+                                                slotStartDateTime,
+                                                slotEndDateTime,
+                                                scheduleException));
+        }
+
+        private boolean overlapsScheduleException(LocalDateTime slotStartDateTime, LocalDateTime slotEndDateTime,
+                        ScheduleException scheduleException) {
+                if (scheduleException.getBreaks().isEmpty()) {
+                        return slotStartDateTime.isBefore(scheduleException.getEndDateTime())
+                                        && slotEndDateTime.isAfter(scheduleException.getStartDateTime());
+                }
+
+                return scheduleException.getBreaks().stream()
+                                .anyMatch(scheduleExceptionBreak -> overlapsScheduleExceptionBreak(
+                                                slotStartDateTime,
+                                                slotEndDateTime,
+                                                scheduleExceptionBreak));
+        }
+
+        private boolean overlapsScheduleExceptionBreak(LocalDateTime slotStartDateTime, LocalDateTime slotEndDateTime,
+                        ScheduleExceptionBreak scheduleExceptionBreak) {
+                return slotStartDateTime.isBefore(scheduleExceptionBreak.getEndDateTime())
+                                && slotEndDateTime.isAfter(scheduleExceptionBreak.getStartDateTime());
         }
 
         private boolean overlaps(LocalTime firstStart, LocalTime firstEnd, LocalTime secondStart,

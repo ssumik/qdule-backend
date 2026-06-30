@@ -9,7 +9,10 @@ public class ScheduleExceptionEntityMapper {
                 entity.getId(),
                 entity.getStartDateTime(),
                 entity.getEndDateTime(),
-                entity.getReason());
+                entity.getReason(),
+                entity.getBreaks().stream()
+                        .map(ScheduleExceptionBreakEntityMapper::toDomain)
+                        .toList());
     }
 
     public static ScheduleExceptionEntity toEntity(ScheduleException scheduleException) {
@@ -19,6 +22,11 @@ public class ScheduleExceptionEntityMapper {
         entity.setStartDateTime(scheduleException.getStartDateTime());
         entity.setEndDateTime(scheduleException.getEndDateTime());
         entity.setReason(scheduleException.getReason());
+        entity.setBreaks(scheduleException.getBreaks().stream()
+                .map(scheduleExceptionBreak -> ScheduleExceptionBreakEntityMapper.toEntity(
+                        scheduleExceptionBreak,
+                        entity))
+                .toList());
 
         return entity;
     }
