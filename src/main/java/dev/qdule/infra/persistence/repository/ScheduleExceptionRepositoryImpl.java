@@ -1,5 +1,8 @@
 package dev.qdule.infra.persistence.repository;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import dev.qdule.application.dto.responses.PageResponse;
@@ -53,6 +56,17 @@ public class ScheduleExceptionRepositoryImpl implements ScheduleExceptionReposit
         pageResponse.setTotalPages(pages + 1);
 
         return pageResponse;
+    }
+
+    @Override
+    public boolean existsOverlapping(LocalDateTime start, LocalDateTime end) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("start", start);
+        parameters.put("end", end);
+
+        return scheduleExceptionRepositoryPanache
+                .find("startDateTime < :end and endDateTime > :start", parameters)
+                .count() > 0;
     }
 
     @Override

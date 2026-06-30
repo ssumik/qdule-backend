@@ -1,6 +1,6 @@
 package dev.qdule.application.services;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import dev.qdule.application.dto.requests.ScheduleExceptionCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleExceptionUpdateRequest;
@@ -84,7 +84,7 @@ public class ScheduleExceptionService {
         scheduleExceptionRepository.removeById(id);
     }
 
-    private void validatePeriod(ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
+    private void validatePeriod(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         if (startDateTime == null || endDateTime == null) {
             throw new ConflictException("Schedule exception start date and end date are required");
         }

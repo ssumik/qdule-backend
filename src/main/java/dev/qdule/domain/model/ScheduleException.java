@@ -1,23 +1,23 @@
 package dev.qdule.domain.model;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 public class ScheduleException {
     private Long id;
-    private ZonedDateTime startDateTime;
-    private ZonedDateTime endDateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     private String reason;
 
     public ScheduleException() {
     }
 
-    public ScheduleException(ZonedDateTime startDateTime, ZonedDateTime endDateTime, String reason) {
+    public ScheduleException(LocalDateTime startDateTime, LocalDateTime endDateTime, String reason) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.reason = reason;
     }
 
-    public ScheduleException(Long id, ZonedDateTime startDateTime, ZonedDateTime endDateTime, String reason) {
+    public ScheduleException(Long id, LocalDateTime startDateTime, LocalDateTime endDateTime, String reason) {
         this.id = id;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -32,19 +32,19 @@ public class ScheduleException {
         this.id = id;
     }
 
-    public ZonedDateTime getStartDateTime() {
+    public LocalDateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(ZonedDateTime startDateTime) {
+    public void setStartDateTime(LocalDateTime startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public ZonedDateTime getEndDateTime() {
+    public LocalDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(ZonedDateTime endDateTime) {
+    public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 

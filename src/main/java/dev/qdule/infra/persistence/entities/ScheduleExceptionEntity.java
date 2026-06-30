@@ -1,6 +1,6 @@
 package dev.qdule.infra.persistence.entities;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,10 +17,10 @@ public class ScheduleExceptionEntity {
     private Long id;
 
     @Column(name = "start_date_time", nullable = false)
-    private ZonedDateTime startDateTime;
+    private LocalDateTime startDateTime;
 
     @Column(name = "end_date_time", nullable = false)
-    private ZonedDateTime endDateTime;
+    private LocalDateTime endDateTime;
 
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;
@@ -28,7 +28,7 @@ public class ScheduleExceptionEntity {
     public ScheduleExceptionEntity() {
     }
 
-    public ScheduleExceptionEntity(Long id, ZonedDateTime startDateTime, ZonedDateTime endDateTime, String reason) {
+    public ScheduleExceptionEntity(Long id, LocalDateTime startDateTime, LocalDateTime endDateTime, String reason) {
         this.id = id;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -43,19 +43,19 @@ public class ScheduleExceptionEntity {
         this.id = id;
     }
 
-    public ZonedDateTime getStartDateTime() {
+    public LocalDateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(ZonedDateTime startDateTime) {
+    public void setStartDateTime(LocalDateTime startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public ZonedDateTime getEndDateTime() {
+    public LocalDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(ZonedDateTime endDateTime) {
+    public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 

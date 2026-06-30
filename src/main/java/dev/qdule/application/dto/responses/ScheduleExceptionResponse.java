@@ -1,17 +1,17 @@
 package dev.qdule.application.dto.responses;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 public class ScheduleExceptionResponse {
     private Long id;
-    private ZonedDateTime startDateTime;
-    private ZonedDateTime endDateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     private String reason;
 
     public ScheduleExceptionResponse() {
     }
 
-    public ScheduleExceptionResponse(Long id, ZonedDateTime startDateTime, ZonedDateTime endDateTime, String reason) {
+    public ScheduleExceptionResponse(Long id, LocalDateTime startDateTime, LocalDateTime endDateTime, String reason) {
         this.id = id;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -26,19 +26,19 @@ public class ScheduleExceptionResponse {
         this.id = id;
     }
 
-    public ZonedDateTime getStartDateTime() {
+    public LocalDateTime getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(ZonedDateTime startDateTime) {
+    public void setStartDateTime(LocalDateTime startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public ZonedDateTime getEndDateTime() {
+    public LocalDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(ZonedDateTime endDateTime) {
+    public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 
