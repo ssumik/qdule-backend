@@ -145,6 +145,12 @@
 
     <profiles>
         <profile>
+            <id>production</id>
+            <properties>
+                <quarkus.profile>prod</quarkus.profile>
+            </properties>
+        </profile>
+        <profile>
             <id>native</id>
             <activation>
                 <property>
