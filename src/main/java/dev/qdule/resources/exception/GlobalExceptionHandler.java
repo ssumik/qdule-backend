@@ -13,6 +13,8 @@ import dev.qdule.application.exception.TreatmentDisabledException;
 import dev.qdule.application.exception.TreatmentNotFoundException;
 import dev.qdule.application.exception.UserNotFoundException;
 import io.quarkus.logging.Log;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
@@ -24,6 +26,25 @@ public class GlobalExceptionHandler
 
     @Override
     public Response toResponse(Exception exception) {
+
+        if (exception instanceof NotFoundException) {
+            ErrorResponse error = new ErrorResponse(
+                    Response.Status.NOT_FOUND.getStatusCode(),
+                    "Resource not found",
+                    LocalDateTime.now());
+            Log.warn("Resource not found: " + exception.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(error).build();
+        }
+
+        if (exception instanceof WebApplicationException webApplicationException) {
+            int status = webApplicationException.getResponse().getStatus();
+            ErrorResponse error = new ErrorResponse(
+                    status,
+                    exception.getMessage(),
+                    LocalDateTime.now());
+            Log.warnf("HTTP request failed with status %d: %s", status, exception.getMessage());
+            return Response.status(status).entity(error).build();
+        }
 
         if (exception instanceof UserNotFoundException) {
             ErrorResponse error = new ErrorResponse(
