@@ -3,7 +3,6 @@ package dev.qdule.domain.model;
 import java.time.Duration;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +70,6 @@ public class Shift {
         this.name = name;
     }
 
-    // TODO: VALIDAR SE PRECISA SER ALTERADO PARA VALOR COM TIMEZONE
     public LocalTime getStartTime() {
         return startTime;
     }
