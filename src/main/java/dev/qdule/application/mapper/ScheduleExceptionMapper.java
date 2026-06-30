@@ -11,6 +11,9 @@ public class ScheduleExceptionMapper {
         response.setStartDateTime(scheduleException.getStartDateTime());
         response.setEndDateTime(scheduleException.getEndDateTime());
         response.setReason(scheduleException.getReason());
+        response.setBreaks(scheduleException.getBreaks().stream()
+                .map(ScheduleExceptionBreakMapper::toResponse)
+                .toList());
 
         return response;
     }

@@ -9,6 +9,7 @@ import java.util.Optional;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.exception.ScheduleExceptionNotFoundException;
 import dev.qdule.domain.model.ScheduleException;
+import dev.qdule.domain.model.ScheduleExceptionBreak;
 import dev.qdule.domain.repository.ScheduleExceptionRepository;
 import dev.qdule.infra.mapper.ScheduleExceptionEntityMapper;
 import dev.qdule.infra.persistence.panache.ScheduleExceptionRepositoryPanache;
@@ -81,7 +82,10 @@ public class ScheduleExceptionRepositoryImpl implements ScheduleExceptionReposit
 
         return scheduleExceptionRepositoryPanache
                 .find("startDateTime < :end and endDateTime > :start", parameters)
-                .count() > 0;
+                .list()
+                .stream()
+                .map(ScheduleExceptionEntityMapper::toDomain)
+                .anyMatch(scheduleException -> overlapsScheduleException(scheduleException, start, end));
     }
 
     @Override
@@ -97,6 +101,23 @@ public class ScheduleExceptionRepositoryImpl implements ScheduleExceptionReposit
         if (!scheduleExceptionRepositoryPanache.deleteById(id)) {
             throw new ScheduleExceptionNotFoundException(id);
         }
+    }
+
+    private boolean overlapsScheduleException(ScheduleException scheduleException, LocalDateTime start,
+            LocalDateTime end) {
+        if (scheduleException.getBreaks().isEmpty()) {
+            return start.isBefore(scheduleException.getEndDateTime())
+                    && end.isAfter(scheduleException.getStartDateTime());
+        }
+
+        return scheduleException.getBreaks().stream()
+                .anyMatch(scheduleExceptionBreak -> overlapsScheduleExceptionBreak(scheduleExceptionBreak, start, end));
+    }
+
+    private boolean overlapsScheduleExceptionBreak(ScheduleExceptionBreak scheduleExceptionBreak, LocalDateTime start,
+            LocalDateTime end) {
+        return start.isBefore(scheduleExceptionBreak.getEndDateTime())
+                && end.isAfter(scheduleExceptionBreak.getStartDateTime());
     }
 
 }
