@@ -3,11 +3,11 @@ package dev.qdule.application.services;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import dev.qdule.application.dto.requests.ClientCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleCreateRequest;
 import dev.qdule.application.dto.requests.ScheduleUpdateRequest;
 import dev.qdule.application.dto.responses.PageResponse;
 import dev.qdule.application.dto.responses.ScheduleResponse;
-import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.application.exception.ConflictException;
 import dev.qdule.application.exception.ScheduleNotFoundException;
 import dev.qdule.application.exception.ShiftDisabledException;
@@ -90,8 +90,7 @@ public class ScheduleService {
                 Treatment treatment = treatmentRepository.findById(scheduleRequest.getTreatmentId())
                                 .orElseThrow(() -> new TreatmentNotFoundException(scheduleRequest.getTreatmentId()));
 
-                Client client = clientRepository.findById(scheduleRequest.getClientId())
-                                .orElseThrow(() -> new ClientNotFoundException(scheduleRequest.getClientId()));
+                Client client = resolveClient(scheduleRequest.getClient());
 
                 Shift shift = shiftRepository.findByDay(scheduleRequest.getStartDateTime().getDayOfWeek())
                                 .orElseThrow(() -> new ShiftNotFoundException(
@@ -114,6 +113,34 @@ public class ScheduleService {
                 var savedSchedule = scheduleRepository.save(schedule);
 
                 return ScheduleMapper.toResponse(savedSchedule);
+        }
+
+        private Client resolveClient(ClientCreateRequest clientRequest) {
+                if (clientRequest == null) {
+                        throw new ConflictException("Client data is required");
+                }
+
+                String email = clientRequest.getEmail();
+                if (email == null || email.isBlank()) {
+                        throw new ConflictException("Client email is required");
+                }
+
+                String normalizedEmail = email.trim();
+
+                return clientRepository.findByEmail(normalizedEmail)
+                                .map(client -> updateClient(client, clientRequest, normalizedEmail))
+                                .orElseGet(() -> clientRepository.save(new Client(
+                                                clientRequest.getName(),
+                                                normalizedEmail,
+                                                clientRequest.getCellPhone())));
+        }
+
+        private Client updateClient(Client client, ClientCreateRequest clientRequest, String normalizedEmail) {
+                client.setName(clientRequest.getName());
+                client.setEmail(normalizedEmail);
+                client.setCellPhone(clientRequest.getCellPhone());
+
+                return clientRepository.save(client);
         }
 
         private void validateScheduleDate(Schedule schedule) {

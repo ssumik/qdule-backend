@@ -6,7 +6,7 @@ import dev.qdule.domain.model.ScheduleStatus;
 
 public class ScheduleCreateRequest {
     private Long treatmentId;
-    private Long clientId;
+    private ClientCreateRequest client;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private String reason;
@@ -20,12 +20,12 @@ public class ScheduleCreateRequest {
         this.treatmentId = treatmentId;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public ClientCreateRequest getClient() {
+        return client;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setClient(ClientCreateRequest client) {
+        this.client = client;
     }
 
     public LocalDateTime getStartDateTime() {
