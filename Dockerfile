@@ -1,13 +1,12 @@
 # syntax=docker/dockerfile:1.7
 
-FROM maven:3.9.9-eclipse-temurin-25 AS build
+FROM maven:3.9.11-eclipse-temurin-25 AS build
 
 WORKDIR /workspace
 COPY pom.xml .
 COPY src ./src
 
-RUN --mount=type=cache,target=/root/.m2 \
-    mvn -B -ntp -DskipTests clean package -Pproduction
+RUN mvn -B -ntp -DskipTests clean package -Pproduction
 
 
 FROM eclipse-temurin:25-jre
