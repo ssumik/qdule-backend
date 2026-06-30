@@ -27,5 +27,5 @@ target/generated-sources/
 # Local configs
 application-dev.properties
 
-docker/
+# docker/
 *.sql
