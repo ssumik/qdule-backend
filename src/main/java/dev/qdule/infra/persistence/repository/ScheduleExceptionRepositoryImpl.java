@@ -2,6 +2,7 @@ package dev.qdule.infra.persistence.repository;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -56,6 +57,20 @@ public class ScheduleExceptionRepositoryImpl implements ScheduleExceptionReposit
         pageResponse.setTotalPages(pages + 1);
 
         return pageResponse;
+    }
+
+    @Override
+    public List<ScheduleException> findBlockingExceptions(LocalDateTime start, LocalDateTime end) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("start", start);
+        parameters.put("end", end);
+
+        return scheduleExceptionRepositoryPanache
+                .find("startDateTime < :end and endDateTime > :start", parameters)
+                .list()
+                .stream()
+                .map(ScheduleExceptionEntityMapper::toDomain)
+                .toList();
     }
 
     @Override
