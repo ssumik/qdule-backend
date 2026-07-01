@@ -1,0 +1,47 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        sed \
+          -e "s|__QDULE_BACKEND_SCHEME__|$${QDULE_BACKEND_SCHEME}|g" \
+          -e "s|__QDULE_BACKEND_METRICS_TARGET__|$${QDULE_BACKEND_METRICS_TARGET}|g" \
+          /etc/prometheus/prometheus.yml.template > /tmp/prometheus.yml
+        exec /bin/prometheus \
+          --config.file=/tmp/prometheus.yml \
+          --storage.tsdb.retention.time=15d
+    environment:
+      QDULE_BACKEND_SCHEME: ${QDULE_BACKEND_SCHEME:-http}
+      QDULE_BACKEND_METRICS_TARGET: ${QDULE_BACKEND_METRICS_TARGET:-host.docker.internal:8080}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml.template:ro
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/qdule-production.json
+    ports:
+      - "${GRAFANA_PORT:-3003}:3000"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  prometheus-data:
+  grafana-data:
