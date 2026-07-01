@@ -2,7 +2,6 @@ package dev.qdule.application.services;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
