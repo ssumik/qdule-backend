@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: qdule-backend
+    metrics_path: /q/metrics
+    scheme: __QDULE_BACKEND_SCHEME__
+    static_configs:
+      - targets:
+          - __QDULE_BACKEND_METRICS_TARGET__
