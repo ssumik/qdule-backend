@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: qdule-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-qdule}
+      POSTGRES_USER: ${DB_USER:-qdule}
+      POSTGRES_PASSWORD: ${DB_PASS:-qdule}
+    ports:
+      - "5432:5432"
+    volumes:
+      - qdule-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  qdule-postgres-data:
