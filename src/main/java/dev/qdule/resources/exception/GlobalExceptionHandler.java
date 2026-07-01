@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import dev.qdule.application.exception.ClientNotFoundException;
 import dev.qdule.application.exception.ConflictException;
-import dev.qdule.application.exception.EmailSendException;
 import dev.qdule.application.exception.ScheduleExceptionNotFoundException;
 import dev.qdule.application.exception.ScheduleNotFoundException;
 import dev.qdule.application.exception.ShiftDisabledException;
@@ -19,7 +18,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
-// TODO: ADICIONAR EXCEPTIONS FALTANTES
 @Provider
 public class GlobalExceptionHandler
         implements ExceptionMapper<Exception> {
@@ -80,15 +78,6 @@ public class GlobalExceptionHandler
                     LocalDateTime.now());
             Log.warn("Schedule exception not found: " + exception.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(error).build();
-        }
-
-        if (exception instanceof EmailSendException) {
-            ErrorResponse error = new ErrorResponse(
-                    Response.Status.BAD_GATEWAY.getStatusCode(),
-                    exception.getMessage(),
-                    LocalDateTime.now());
-            Log.warn("Email send failed: " + exception.getMessage());
-            return Response.status(Response.Status.BAD_GATEWAY).entity(error).build();
         }
 
         if (exception instanceof ConflictException) {
